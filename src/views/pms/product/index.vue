@@ -23,9 +23,6 @@
           <el-form-item label="输入搜索：">
             <el-input style="width: 203px" v-model="listQuery.keyword" placeholder="商品名称"></el-input>
           </el-form-item>
-          <el-form-item label="商品货号：">
-            <el-input style="width: 203px" v-model="listQuery.productSn" placeholder="商品货号"></el-input>
-          </el-form-item>
           <el-form-item label="商品分类：">
             <el-cascader
               clearable
@@ -33,7 +30,7 @@
               :options="productCateOptions">
             </el-cascader>
           </el-form-item>
-          <el-form-item label="商品品牌：">
+          <el-form-item label="商品状态：">
             <el-select v-model="listQuery.brandId" placeholder="请选择品牌" clearable>
               <el-option
                 v-for="item in brandOptions"

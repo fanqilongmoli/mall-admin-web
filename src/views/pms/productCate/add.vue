@@ -1,11 +1,11 @@
 <template> 
-  <product-cate-detail :is-edit='false'></product-cate-detail>
+  <product-cate-info :is-edit='false'></product-cate-info>
 </template>
 <script>
-  import ProductCateDetail from './components/ProductCateDetail'
+  import ProductCateInfo from './components/ProductCateInfo'
   export default {
     name: 'addProductCate',
-    components: { ProductCateDetail }
+    components: { ProductCateInfo }
   }
 </script>
 <style>
