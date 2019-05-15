@@ -167,7 +167,7 @@
   </div>
 </template>
 <script>
-  import {getProductList, updateDeleteStatus} from '../../../api/product'
+  import {getProductList, deleteProduct} from '../../../api/product'
   import {getProductCateList} from '../../../api/productCate'
   import {fetchListWithChildren} from '@/api/productCate'
 
@@ -275,7 +275,7 @@
         }).then(() => {
           let ids = [];
           ids.push(row.id);
-          this.updateDeleteStatus(1, ids);
+          this.updateDeleteStatus(ids);
         });
       },
       handleUpdateProduct(index, row) {
@@ -285,18 +285,19 @@
         console.log("handleShowProduct", row);
       },
 
-      updateDeleteStatus(deleteStatus, ids) {
-        let params = new URLSearchParams();
-        params.append('ids', ids);
-        params.append('deleteStatus', deleteStatus);
-        updateDeleteStatus(params).then(response => {
+      updateDeleteStatus(ids) {
+        //let params = new URLSearchParams();
+        //params.append('ids', ids);
+        //params.append('deleteStatus', deleteStatus);
+        deleteProduct(ids).then(response => {
           this.$message({
             message: '删除成功',
             type: 'success',
             duration: 1000
           });
+          this.getList();
         });
-        this.getList();
+
       }
     }
   }

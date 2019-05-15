@@ -89,3 +89,15 @@ export function getProductList(data) {
   })
 }
 
+/**
+ * 删除商品
+ * @param data
+ */
+export function deleteProduct(data) {
+  return request({
+    url: '/mall/admin/product/delete',
+    method: 'post',
+    data: data
+  })
+}
+
