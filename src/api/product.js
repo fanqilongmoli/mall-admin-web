@@ -73,18 +73,18 @@ export function getProduct(id) {
 
 /**
  * 获取商品列表
- * @param pageNo
- * @param pageSize
- * @param name
- * @param categoryId
- * @param status
+ * @param data
  */
-export function getProductList(pageNo, pageSize, name, categoryId, status) {
+export function getProductList(data) {
   return request({
     url: '/mall/admin/product/list',
     method: 'post',
     data: {
-      pageNo, pageSize, name, categoryId, status
+      name: data.name,
+      pageNo: data.pageNo - 1,
+      pageSize: data.pageSize,
+      status: data.status,
+      categoryId: data.categoryId ? data.categoryId[1] : null,
     }
   })
 }
