@@ -1,8 +1,8 @@
 <template> 
   <el-card class="form-container" shadow="never">
     <el-steps :active="active" finish-status="success" align-center>
-      <el-step title="填写商品信息"></el-step>
-      <el-step title="填写商品促销"></el-step>
+      <el-step title="填写商品基本信息"></el-step>
+      <el-step title="填写商品详情"></el-step>
       <el-step title="填写商品属性"></el-step>
       <el-step title="选择商品关联"></el-step>
     </el-steps>
@@ -40,68 +40,25 @@
   import ProductSaleDetail from './ProductSaleDetail';
   import ProductAttrDetail from './ProductAttrDetail';
   import ProductRelationDetail from './ProductRelationDetail';
-  import {createProduct,getProduct,updateProduct} from '@/api/product';
+  import {createProduct, getProduct, updateProduct} from '@/api/product';
 
   const defaultProductParam = {
-    albumPics: '',
-    brandId: null,
-    brandName: '',
-    deleteStatus: 0,
-    description: '',
-    detailDesc: '',
-    detailHtml: '',
-    detailMobileHtml: '',
-    detailTitle: '',
-    feightTemplateId: 0,
-    flashPromotionCount: 0,
-    flashPromotionId: 0,
-    flashPromotionPrice: 0,
-    flashPromotionSort: 0,
-    giftPoint: 0,
-    giftGrowth: 0,
-    keywords: '',
-    lowStock: 0,
-    name: '',
-    newStatus: 0,
-    note: '',
-    originalPrice: 0,
-    pic: '',
-    //会员价格{memberLevelId: 0,memberPrice: 0,memberLevelName: null}
-    memberPriceList: [],
-    //商品满减
-    productFullReductionList: [{fullPrice: 0, reducePrice: 0}],
-    //商品阶梯价格
-    productLadderList: [{count: 0,discount: 0,price: 0}],
-    previewStatus: 0,
-    price: 0,
-    productAttributeCategoryId: null,
-    //商品属性相关{productAttributeId: 0, value: ''}
-    productAttributeValueList: [],
-    //商品sku库存信息{lowStock: 0, pic: '', price: 0, sale: 0, skuCode: '', sp1: '', sp2: '', sp3: '', stock: 0}
-    skuStockList: [],
-    //商品相关专题{subjectId: 0}
-    subjectProductRelationList: [],
-    //商品相关优选{prefrenceAreaId: 0}
-    prefrenceAreaProductRelationList: [],
-    productCategoryId: null,
-    productCategoryName: '',
-    productSn: '',
-    promotionEndTime: '',
-    promotionPerLimit: 0,
-    promotionPrice: null,
-    promotionStartTime: '',
-    promotionType: 0,
-    publishStatus: 0,
-    recommandStatus: 0,
-    sale: 0,
-    serviceIds: '',
-    sort: 0,
-    stock: 0,
-    subTitle: '',
-    unit: '',
-    usePointLimit: 0,
-    verifyStatus: 0,
-    weight: 0
+    categoryId: null, //商品分类
+    name: '', //商品名称
+    subtitle: '', //商品子标题
+    mainImage: '', //商品主图
+    squareImage: '', // 商品正方形图片
+    specs: '', // 商品规格
+    costPrice: null, //商品成本价
+    originalPrice: null, //商品原价
+    price: null, // 商品现单价
+    stock: 0, // 库存
+    label: '', // 标签
+    checkStock: '1', //校验库存
+    sort: 0, //排序
+    status: null, //商品状态 1下架 2在售 3新品 4爆款
+    subImages: [], //商品相册
+    detail: '', // 商品详情
   };
   export default {
     name: 'ProductDetail',
@@ -119,10 +76,10 @@
         showStatus: [true, false, false, false]
       }
     },
-    created(){
-      if(this.isEdit){
-        getProduct(this.$route.query.id).then(response=>{
-          this.productParam=response.data;
+    created() {
+      if (this.isEdit) {
+        getProduct(this.$route.query.id).then(response => {
+          this.productParam = response.data;
         });
       }
     },
@@ -152,21 +109,21 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          if(isEdit){
-            updateProduct(this.$route.query.id,this.productParam).then(response=>{
+          if (isEdit) {
+            updateProduct(this.$route.query.id, this.productParam).then(response => {
               this.$message({
                 type: 'success',
                 message: '提交成功',
-                duration:1000
+                duration: 1000
               });
               this.$router.back();
             });
-          }else{
-            createProduct(this.productParam).then(response=>{
+          } else {
+            createProduct(this.productParam).then(response => {
               this.$message({
                 type: 'success',
                 message: '提交成功',
-                duration:1000
+                duration: 1000
               });
               location.reload();
             });

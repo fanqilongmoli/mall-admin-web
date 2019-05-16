@@ -132,26 +132,6 @@
         </el-table-column>
       </el-table>
     </div>
-    <!--<div class="batch-operate-container">-->
-    <!--<el-select-->
-    <!--size="small"-->
-    <!--v-model="operateType" placeholder="批量操作">-->
-    <!--<el-option-->
-    <!--v-for="item in operates"-->
-    <!--:key="item.value"-->
-    <!--:label="item.label"-->
-    <!--:value="item.value">-->
-    <!--</el-option>-->
-    <!--</el-select>-->
-    <!--<el-button-->
-    <!--style="margin-left: 20px"-->
-    <!--class="search-button"-->
-    <!--@click="handleBatchOperate()"-->
-    <!--type="primary"-->
-    <!--size="small">-->
-    <!--确定-->
-    <!--</el-button>-->
-    <!--</div>-->
     <div class="pagination-container">
       <el-pagination
         background
@@ -169,7 +149,6 @@
 <script>
   import {getProductList, deleteProduct} from '../../../api/product'
   import {getProductCateList} from '../../../api/productCate'
-  import {fetchListWithChildren} from '@/api/productCate'
 
   const defaultListQuery = {
     name: null,
