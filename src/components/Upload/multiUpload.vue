@@ -1,8 +1,9 @@
+3
 <template> 
   <div>
     <el-upload
-      action="http://macro-oss.oss-cn-shenzhen.aliyuncs.com"
-      :data="dataObj"
+      action="http://upload-z0.qiniu.com"
+      :data="uptoken"
       list-type="picture-card"
       :file-list="fileList"
       :before-upload="beforeUpload"
@@ -20,7 +21,7 @@
   </div>
 </template>
 <script>
-  import {policy} from '@/api/oss'
+  import {uploadToken} from '../../api/public'
 
   export default {
     name: 'multiUpload',
@@ -28,75 +29,69 @@
       //图片属性数组
       value: Array,
       //最大上传图片数量
-      maxCount:{
-        type:Number,
-        default:5
+      maxCount: {
+        type: Number,
+        default: 5
       }
     },
     data() {
       return {
-        dataObj: {
-          policy: '',
-          signature: '',
-          key: '',
-          ossaccessKeyId: '',
-          dir: '',
-          host: ''
+        uptoken: {
+          token: '',
+          key: ''
         },
         dialogVisible: false,
-        dialogImageUrl:null
+        dialogImageUrl: null,
+        listObj: []
       };
     },
     computed: {
       fileList() {
-        let fileList=[];
-        for(let i=0;i<this.value.length;i++){
-          fileList.push({url:this.value[i]});
-        }
-        return fileList;
-      }
+        const temp = [];
+        console.log('qwqwqw', this.value);
+        this.value.forEach(item => {
+          temp.push({
+            url: item
+          })
+        });
+        return temp
+      },
+
+    },
+    created() {
+      uploadToken().then(response => {
+        this.uptoken.token = response.data
+      })
     },
     methods: {
-      emitInput(fileList) {
-        let value=[];
-        for(let i=0;i<fileList.length;i++){
-          value.push(fileList[i].url);
-        }
-        this.$emit('input', value)
-      },
       handleRemove(file, fileList) {
-        this.emitInput(fileList);
+        this.value = fileList.map(item => item.url);
+        this.$emit('input', this.value)
+        // const anies = this.listObj.filter(item => item.name !== file.response.key).map(item => item.url);
       },
       handlePreview(file) {
         this.dialogVisible = true;
-        this.dialogImageUrl=file.url;
+        this.dialogImageUrl = file.url;
       },
       beforeUpload(file) {
-        let _self = this;
-        return new Promise((resolve, reject) => {
-          policy().then(response => {
-            _self.dataObj.policy = response.data.policy;
-            _self.dataObj.signature = response.data.signature;
-            _self.dataObj.ossaccessKeyId = response.data.accessKeyId;
-            _self.dataObj.key = response.data.dir + '/${filename}';
-            _self.dataObj.dir = response.data.dir;
-            _self.dataObj.host = response.data.host;
-            resolve(true)
-          }).catch(err => {
-            console.log(err)
-            reject(false)
-          })
-        })
+        this.uptoken.key = new Date().getTime() + file.name;
+        return true;
       },
       handleUploadSuccess(res, file) {
-        this.fileList.push({url: file.name,url:this.dataObj.host + '/' + this.dataObj.dir + '/' + file.name});
-        this.emitInput(this.fileList);
+        //this.fileList.push({name: file.name, url: `http://prqmm1g1p.bkt.clouddn.com/${file.response.key}`});
+        this.value.push(`http://prqmm1g1p.bkt.clouddn.com/${file.response.key}`);
+        // this.listObj.push({
+        //   name: file.response.key,
+        //   url: this.value
+        // });
+        this.$emit('input', this.value)
+        console.log('handleUploadSuccess', this.value);
       },
       handleExceed(files, fileList) {
         this.$message({
-          message: '最多只能上传'+this.maxCount+'张图片',
+          message: '最多只能上传' + this.maxCount + '张图片',
           type: 'warning',
-          duration:1000
+          duration: 1000
         });
       },
     }

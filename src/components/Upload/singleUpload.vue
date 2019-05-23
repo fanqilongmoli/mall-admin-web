@@ -1,11 +1,12 @@
 <template> 
   <div>
     <el-upload
-      action="http://macro-oss.oss-cn-shenzhen.aliyuncs.com"
-      :data="dataObj"
+      action="http://upload-z0.qiniu.com"
+      :data="uptoken"
       list-type="picture"
-      :multiple="false" :show-file-list="showFileList"
+      :multiple="false"
       :file-list="fileList"
+      :show-file-list="showFileList"
       :before-upload="beforeUpload"
       :on-remove="handleRemove"
       :on-success="handleUploadSuccess"
@@ -19,7 +20,7 @@
   </div>
 </template>
 <script>
-  import {policy} from '@/api/oss'
+  import {uploadToken} from '../../api/public'
 
   export default {
     name: 'singleUpload',
@@ -27,42 +28,37 @@
       value: String
     },
     computed: {
-      imageUrl() {
-        return this.value;
-      },
-      imageName() {
-        if (this.value != null && this.value !== '') {
-          return this.value.substr(this.value.lastIndexOf("/") + 1);
-        } else {
-          return null;
-        }
-      },
-      fileList() {
-        return [{
-          name: this.imageName,
-          url: this.imageUrl
-        }]
-      },
       showFileList: {
         get: function () {
-          return this.value !== null && this.value !== ''&& this.value!==undefined;
+          console.log('this.value', this.value !== null && this.value !== '' && this.value !== undefined)
+          return this.value !== null && this.value !== '' && this.value !== undefined;
         },
         set: function (newValue) {
         }
       }
     },
+    watch: {
+      value(val) {
+        this.fileList.pop();
+        this.fileList.push({
+          url: val
+        })
+      }
+    },
     data() {
       return {
-        dataObj: {
-          policy: '',
-          signature: '',
-          key: '',
-          ossaccessKeyId: '',
-          dir: '',
-          host: ''
+        uptoken: {
+          token: '',
+          key: ''
         },
-        dialogVisible: false
+        dialogVisible: false,
+        fileList: []
       };
+    },
+    created() {
+      uploadToken().then(response => {
+        this.uptoken.token = response.data
+      })
     },
     methods: {
       emitInput(val) {
@@ -75,27 +71,15 @@
         this.dialogVisible = true;
       },
       beforeUpload(file) {
-        let _self = this;
-        return new Promise((resolve, reject) => {
-          policy().then(response => {
-            _self.dataObj.policy = response.data.policy;
-            _self.dataObj.signature = response.data.signature;
-            _self.dataObj.ossaccessKeyId = response.data.accessKeyId;
-            _self.dataObj.key = response.data.dir + '/${filename}';
-            _self.dataObj.dir = response.data.dir;
-            _self.dataObj.host = response.data.host;
-            resolve(true)
-          }).catch(err => {
-            console.log(err)
-            reject(false)
-          })
-        })
+        this.uptoken.key = new Date().getTime() + file.name;
+        return true;
       },
       handleUploadSuccess(res, file) {
         this.showFileList = true;
         this.fileList.pop();
-        this.fileList.push({name: file.name, url: this.dataObj.host + '/' + this.dataObj.dir + '/' + file.name});
+        this.fileList.push({name: file.name, url: `http://prqmm1g1p.bkt.clouddn.com/${file.name}`});
         this.emitInput(this.fileList[0].url);
+        console.log("this.fileList", this.fileList)
       }
     }
   }

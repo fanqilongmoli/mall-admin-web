@@ -101,3 +101,28 @@ export function deleteProduct(data) {
   })
 }
 
+/**
+ * 保存修改商品
+ * @param data
+ */
+export function saveProduct(data) {
+  data.categoryId = data.categoryId ? data.categoryId[1] : null
+  return request({
+    url: 'mall/admin/product',
+    method: 'post',
+    data: data
+  })
+}
+
+/**
+ * 保存修改商品
+ * @param data
+ */
+export function getDetail(id) {
+  return request({
+    url: `mall/admin/product/${id}`,
+    method: 'get',
+  })
+}
+
+

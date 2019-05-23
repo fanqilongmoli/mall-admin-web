@@ -1,6 +1,6 @@
 <template>
   <div style="margin-top: 50px">
-    <el-form :model="value" :rules="rules" ref="productInfoForm" label-width="120px" style="width: 600px" size="small">
+    <el-form :model="value" :rules="rules" ref="productInfoForm" label-width="120px" style="width: 720px" size="small">
       <el-form-item label="商品分类：" prop="categoryId">
         <el-cascader
           v-model="value.categoryId"
@@ -11,8 +11,14 @@
       <el-form-item label="商品名称：" prop="name">
         <el-input v-model="value.name"></el-input>
       </el-form-item>
-      <el-form-item label="商品子标题：" prop="subTitle">
-        <el-input v-model="value.subTitle"></el-input>
+      <el-form-item label="商品子标题：" prop="subtitle">
+        <el-input v-model="value.subtitle"></el-input>
+      </el-form-item>
+      <el-form-item label="商品主图：" prop="mainImage">
+        <single-upload v-model="value.mainImage"/>
+      </el-form-item>
+      <el-form-item label="商品正方形图：" prop="squareImage">
+        <single-upload v-model="value.squareImage"/>
       </el-form-item>
       <el-form-item label="商品规格：" prop="specs">
         <el-input v-model="value.specs" placeholder="你可以输入 300g/盒"></el-input>
@@ -62,6 +68,9 @@
   import {fetchListWithChildren} from '@/api/productCate'
   import {fetchList as fetchBrandList} from '@/api/brand'
   import {getProductCateList} from '../../../../api/productCate';
+  import SingleUpload from '../../../../components/Upload/singleUpload'
+  import MultiUpload from '../../../../components/Upload/multiUpload'
+  import Tinymce from '../../../../components/Tinymce'
 
   export default {
     name: "ProductInfoDetail",
@@ -106,7 +115,7 @@
             {required: true, message: '请输入商品名称', trigger: 'blur'},
             {min: 2, max: 140, message: '长度在 2 到 140 个字符', trigger: 'blur'}
           ],
-          subTitle: [{required: true, message: '请输入商品副标题', trigger: 'blur'}],
+          subtitle: [{required: true, message: '请输入商品副标题', trigger: 'blur'}],
           categoryId: [{required: true, message: '请选择商品分类', trigger: 'blur'}],
           specs: [{required: true, message: '请选择商品规格', trigger: 'blur'}],
           description: [{required: true, message: '请输入商品介绍', trigger: 'blur'}],
@@ -119,13 +128,15 @@
     },
     created() {
       this.getProductCateLists();
-      this.getBrandList();
     },
     computed: {
       //商品的编号
       productId() {
         return this.value.id;
       }
+    },
+    components: {
+      SingleUpload, MultiUpload, Tinymce
     },
     watch: {
       productId: function (newValue) {
@@ -157,15 +168,6 @@
         getProductCateList().then(response => {
           this.productCateOptions = response.data
         })
-      },
-      getBrandList() {
-        fetchBrandList({pageNum: 1, pageSize: 100}).then(response => {
-          this.brandOptions = [];
-          let brandList = response.data.list;
-          for (let i = 0; i < brandList.length; i++) {
-            this.brandOptions.push({label: brandList[i].name, value: brandList[i].id});
-          }
-        });
       },
       getCateNameById(id) {
         let name = null;

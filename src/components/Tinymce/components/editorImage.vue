@@ -5,8 +5,8 @@
     </el-button>
     <el-dialog append-to-body :visible.sync="dialogVisible">
       <el-upload class="editor-slide-upload"
-                 action="http://macro-oss.oss-cn-shenzhen.aliyuncs.com"
-                 :data="dataObj"
+                 action="http://upload-z0.qiniu.com"
+                 :data="uptoken"
                  :multiple="true"
                  :file-list="fileList"
                  :show-file-list="true"
@@ -23,7 +23,7 @@
 </template>
 
 <script>
-  import {policy} from '@/api/oss'
+  import {uploadToken} from '../../../api/public'
 
   export default {
     name: 'editorSlideUpload',
@@ -36,81 +36,48 @@
     data() {
       return {
         dialogVisible: false,
-        listObj: {},
+        listObj: [],
         fileList: [],
-        dataObj: {
-          policy: '',
-          signature: '',
-          key: '',
-          ossaccessKeyId: '',
-          dir: '',
-          host: ''
-        }
+        uptoken: {
+          token: '',
+          key: ''
+        },
       }
+    },
+    created() {
+      uploadToken().then(response => {
+        this.uptoken.token = response.data
+      })
     },
     methods: {
       checkAllSuccess() {
         return Object.keys(this.listObj).every(item => this.listObj[item].hasSuccess)
       },
       handleSubmit() {
-        const arr = Object.keys(this.listObj).map(v => this.listObj[v])
-        if (!this.checkAllSuccess()) {
-          this.$message('请等待所有图片上传成功 或 出现了网络问题，请刷新页面重新上传！')
-          return
-        }
-        console.log(arr);
-        this.$emit('successCBK', arr);
+        console.log(this.listObj);
+        this.$emit('successCBK', this.listObj);
         this.listObj = {};
         this.fileList = [];
         this.dialogVisible = false;
       },
       handleSuccess(response, file) {
-        const uid = file.uid;
-        const objKeyArr = Object.keys(this.listObj)
-        for (let i = 0, len = objKeyArr.length; i < len; i++) {
-          if (this.listObj[objKeyArr[i]].uid === uid) {
-            this.listObj[objKeyArr[i]].url = this.dataObj.host + '/' + this.dataObj.dir + '/' + file.name;
-            this.listObj[objKeyArr[i]].hasSuccess = true;
-            return
-          }
-        }
+        this.listObj.push({uid: file.uid, name: file.name, url: `http://prqmm1g1p.bkt.clouddn.com/${file.name}`});
+        console.log("this.listObj", this.listObj)
       },
       handleRemove(file) {
-        const uid = file.uid;
-        const objKeyArr = Object.keys(this.listObj);
-        for (let i = 0, len = objKeyArr.length; i < len; i++) {
-          if (this.listObj[objKeyArr[i]].uid === uid) {
-            delete this.listObj[objKeyArr[i]];
-            return
-          }
-        }
+        this.listObj = this.listObj.filter(item => item.uid !== file.uid)
+        console.log("this.listObjfilter", this.listObj)
       },
       beforeUpload(file) {
-        const _self = this
-        const fileName = file.uid;
-        this.listObj[fileName] = {};
-        return new Promise((resolve, reject) => {
-          policy().then(response => {
-            _self.dataObj.policy = response.data.policy;
-            _self.dataObj.signature = response.data.signature;
-            _self.dataObj.ossaccessKeyId = response.data.accessKeyId;
-            _self.dataObj.key = response.data.dir + '/${filename}';
-            _self.dataObj.dir = response.data.dir;
-            _self.dataObj.host = response.data.host;
-            _self.listObj[fileName] = {hasSuccess: false, uid: file.uid, width: this.width, height: this.height};
-            resolve(true)
-          }).catch(err => {
-            console.log(err)
-            reject(false)
-          })
-        })
+        this.uptoken.key = file.name;
+        return true;
       }
     }
   }
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-  .upload-container .editor-slide-upload{
+  .upload-container .editor-slide-upload {
     margin-bottom: 20px;
   }
 </style>
