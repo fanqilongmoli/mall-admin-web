@@ -39,6 +39,7 @@
     },
     watch: {
       value(val) {
+        console.log("------------",val)
         this.fileList.pop();
         this.fileList.push({
           url: val
@@ -58,6 +59,9 @@
     created() {
       uploadToken().then(response => {
         this.uptoken.token = response.data
+      })
+      this.fileList.push({
+        url: this.value
       })
     },
     methods: {

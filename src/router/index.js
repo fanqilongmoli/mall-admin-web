@@ -95,7 +95,8 @@ export const constantRouterMap = [
         path: 'productAttr',
         name: 'productAttr',
         component: () => import('@/views/pms/productAttr/index'),
-        meta: {title: '商品类型', icon: 'product-attr'}
+        meta: {title: '商品类型', icon: 'product-attr'},
+        hidden: true
       },
       {
         path: 'productAttrList',
@@ -122,7 +123,8 @@ export const constantRouterMap = [
         path: 'brand',
         name: 'brand',
         component: () => import('@/views/pms/brand/index'),
-        meta: {title: '品牌管理', icon: 'product-brand'}
+        meta: {title: '品牌管理', icon: 'product-brand'},
+        hidden: true
       },
       {
         path: 'addBrand',
