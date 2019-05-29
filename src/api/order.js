@@ -63,6 +63,20 @@ export function updateOrderNote(params) {
   })
 }
 
+/**
+ * 获取订单详情:订单信息、商品信息
+ */
+export function orderDetail(id) {
+  return request({
+    url: `/mall/admin/order/${id}`,
+    method: 'get',
+  })
+}
+
+/**
+ * 获取订单列表
+ * @param data
+ */
 export function orderList(data) {
   return request({
     url: '/mall/admin/order/list',
@@ -76,5 +90,28 @@ export function orderList(data) {
       status: data.status,
       createTime: data.createTime
     }
+  })
+}
+
+/**
+ * 获取订单设置
+ * @param id
+ */
+export function getOrderSetting(id) {
+  return request({
+    url: `/mall/admin/orderSetting/${id}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 修改指定订单设置
+ * @param data
+ */
+export function saveOrderSetting(data) {
+  return request({
+    url: '/mall/admin/orderSetting/save',
+    method: 'post',
+    data: data
   })
 }
