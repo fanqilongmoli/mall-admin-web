@@ -34,16 +34,24 @@ export function createHomeAdvertise(data) {
   })
 }
 
+/**
+ * 获取banner详情
+ * @param id
+ */
 export function getHomeAdvertise(id) {
   return request({
-    url: '/home/advertise/' + id,
+    url: `/mall/banner/${id}`,
     method: 'get',
   })
 }
 
-export function updateHomeAdvertise(id, data) {
+/**
+ * 更新 banner数据
+ * @param data
+ */
+export function updateHomeAdvertise(data) {
   return request({
-    url: '/home/advertise/update/' + id,
+    url: '/mall/banner',
     method: 'post',
     data: data
   })
