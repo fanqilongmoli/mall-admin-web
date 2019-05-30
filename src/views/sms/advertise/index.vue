@@ -238,7 +238,7 @@
         });
       },
       handleDelete(index,row){
-        this.deleteHomeAdvertise(row.id);
+        this.deleteHomeAdvertise([row.id]);
       },
       handleBatchOperate(){
         if (this.multipleSelection < 1) {
@@ -285,9 +285,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          let params=new URLSearchParams();
-          params.append("ids",ids);
-          deleteHomeAdvertise(params).then(response=>{
+          deleteHomeAdvertise(ids).then(response=>{
             this.getList();
             this.$message({
               type: 'success',

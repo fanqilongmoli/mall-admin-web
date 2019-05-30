@@ -20,7 +20,7 @@ export function updateStatus(id, params) {
 
 export function deleteHomeAdvertise(data) {
   return request({
-    url: '/home/advertise/delete',
+    url: '/mall/banner/delete',
     method: 'post',
     data: data
   })
