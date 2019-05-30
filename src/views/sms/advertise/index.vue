@@ -1,49 +1,49 @@
 <template> 
   <div class="app-container">
-    <el-card class="filter-container" shadow="never">
-      <div>
-        <i class="el-icon-search"></i>
-        <span>筛选搜索</span>
-        <el-button
-          style="float:right"
-          type="primary"
-          @click="handleSearchList()"
-          size="small">
-          查询搜索
-        </el-button>
-        <el-button
-          style="float:right;margin-right: 15px"
-          @click="handleResetSearch()"
-          size="small">
-          重置
-        </el-button>
-      </div>
-      <div style="margin-top: 15px">
-        <el-form :inline="true" :model="listQuery" size="small" label-width="140px">
-          <el-form-item label="广告名称：">
-            <el-input v-model="listQuery.name" class="input-width" placeholder="广告名称"></el-input>
-          </el-form-item>
-          <el-form-item label="广告位置：">
-            <el-select v-model="listQuery.type" placeholder="全部" clearable class="input-width">
-              <el-option v-for="item in typeOptions"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="到期时间：">
-            <el-date-picker
-              class="input-width"
-              v-model="listQuery.endTime"
-              value-format="yyyy-MM-dd"
-              type="date"
-              placeholder="请选择时间">
-            </el-date-picker>
-          </el-form-item>
-        </el-form>
-      </div>
-    </el-card>
+    <!--<el-card class="filter-container" shadow="never">-->
+      <!--<div>-->
+        <!--<i class="el-icon-search"></i>-->
+        <!--<span>筛选搜索</span>-->
+        <!--<el-button-->
+          <!--style="float:right"-->
+          <!--type="primary"-->
+          <!--@click="handleSearchList()"-->
+          <!--size="small">-->
+          <!--查询搜索-->
+        <!--</el-button>-->
+        <!--<el-button-->
+          <!--style="float:right;margin-right: 15px"-->
+          <!--@click="handleResetSearch()"-->
+          <!--size="small">-->
+          <!--重置-->
+        <!--</el-button>-->
+      <!--</div>-->
+      <!--<div style="margin-top: 15px">-->
+        <!--<el-form :inline="true" :model="listQuery" size="small" label-width="140px">-->
+          <!--<el-form-item label="广告名称：">-->
+            <!--<el-input v-model="listQuery.name" class="input-width" placeholder="广告名称"></el-input>-->
+          <!--</el-form-item>-->
+          <!--<el-form-item label="广告位置：">-->
+            <!--<el-select v-model="listQuery.type" placeholder="全部" clearable class="input-width">-->
+              <!--<el-option v-for="item in typeOptions"-->
+                         <!--:key="item.value"-->
+                         <!--:label="item.label"-->
+                         <!--:value="item.value">-->
+              <!--</el-option>-->
+            <!--</el-select>-->
+          <!--</el-form-item>-->
+          <!--<el-form-item label="到期时间：">-->
+            <!--<el-date-picker-->
+              <!--class="input-width"-->
+              <!--v-model="listQuery.endTime"-->
+              <!--value-format="yyyy-MM-dd"-->
+              <!--type="date"-->
+              <!--placeholder="请选择时间">-->
+            <!--</el-date-picker>-->
+          <!--</el-form-item>-->
+        <!--</el-form>-->
+      <!--</div>-->
+    <!--</el-card>-->
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets"></i>
       <span>数据列表</span>
@@ -56,40 +56,40 @@
                 @selection-change="handleSelectionChange"
                 v-loading="listLoading" border>
         <el-table-column type="selection" width="60" align="center"></el-table-column>
-        <el-table-column label="编号" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.id}}</template>
+        <el-table-column label="排序" width="120" align="center">
+          <template slot-scope="scope">{{scope.row.positionSort}}</template>
         </el-table-column>
         <el-table-column label="广告名称" align="center">
           <template slot-scope="scope">{{scope.row.name}}</template>
         </el-table-column>
-        <el-table-column label="广告位置" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.type | formatType}}</template>
+        <!--<el-table-column label="广告位置" width="120" align="center">-->
+          <!--<template slot-scope="scope">{{scope.row.type | formatType}}</template>-->
+        <!--</el-table-column>-->
+        <el-table-column label="广告图片" align="center">
+          <template slot-scope="scope"><img style="height: 80px" :src="scope.row.imageUrl"></template>
         </el-table-column>
-        <el-table-column label="广告图片" width="120" align="center">
-          <template slot-scope="scope"><img style="height: 80px" :src="scope.row.pic"></template>
-        </el-table-column>
-        <el-table-column label="时间" width="220" align="center">
+        <el-table-column label="时间" align="center">
           <template slot-scope="scope">
-            <p>开始时间：{{scope.row.startTime | formatTime}}</p>
-            <p>到期时间：{{scope.row.endTime | formatTime}}</p>
+            <p>创建时间：{{scope.row.createTime | formatTime}}</p>
+            <p>更新时间：{{scope.row.updateTime | formatTime}}</p>
           </template>
         </el-table-column>
-        <el-table-column label="上线/下线" width="120" align="center">
-          <template slot-scope="scope">
-            <el-switch
-              @change="handleUpdateStatus(scope.$index, scope.row)"
-              :active-value="1"
-              :inactive-value="0"
-              v-model="scope.row.status">
-            </el-switch>
-          </template>
+        <!--<el-table-column label="上线/下线" width="120" align="center">-->
+          <!--<template slot-scope="scope">-->
+            <!--<el-switch-->
+              <!--@change="handleUpdateStatus(scope.$index, scope.row)"-->
+              <!--:active-value="1"-->
+              <!--:inactive-value="0"-->
+              <!--v-model="scope.row.status">-->
+            <!--</el-switch>-->
+          <!--</template>-->
+        <!--</el-table-column>-->
+        <el-table-column label="链接地址" width="220" align="center">
+          <template slot-scope="scope">{{scope.row.link}}</template>
         </el-table-column>
-        <el-table-column label="点击次数" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.clickCount}}</template>
-        </el-table-column>
-        <el-table-column label="生成订单" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.orderCount}}</template>
-        </el-table-column>
+        <!--<el-table-column label="生成订单" width="120" align="center">-->
+          <!--<template slot-scope="scope">{{scope.row.orderCount}}</template>-->
+        <!--</el-table-column>-->
         <el-table-column label="操作" width="120" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
@@ -125,21 +125,21 @@
       </el-button>
     </div>
     <div class="pagination-container">
-      <el-pagination
-        background
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        layout="total, sizes,prev, pager, next,jumper"
-        :page-size="listQuery.pageSize"
-        :page-sizes="[5,10,15]"
-        :current-page.sync="listQuery.pageNum"
-        :total="total">
-      </el-pagination>
+      <!--<el-pagination-->
+        <!--background-->
+        <!--@size-change="handleSizeChange"-->
+        <!--@current-change="handleCurrentChange"-->
+        <!--layout="total, sizes,prev, pager, next,jumper"-->
+        <!--:page-size="listQuery.pageSize"-->
+        <!--:page-sizes="[5,10,15]"-->
+        <!--:current-page.sync="listQuery.pageNum"-->
+        <!--:total="total">-->
+      <!--</el-pagination>-->
     </div>
   </div>
 </template>
 <script>
-  import {fetchList,updateStatus,deleteHomeAdvertise} from '@/api/homeAdvertise';
+  import {fetchList,updateStatus,deleteHomeAdvertise} from '../../../api/homeAdvertise';
   import {formatDate} from '@/utils/date';
   const defaultListQuery = {
     pageNum: 1,
@@ -274,8 +274,9 @@
         this.listLoading = true;
         fetchList(this.listQuery).then(response => {
           this.listLoading = false;
-          this.list = response.data.list;
-          this.total = response.data.total;
+          console.log('getList', response)
+          this.list = response.data;
+          this.total = response.data.length;
         })
       },
       deleteHomeAdvertise(ids){

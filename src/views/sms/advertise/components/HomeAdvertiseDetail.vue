@@ -63,7 +63,7 @@
 </template>
 <script>
   import SingleUpload from '@/components/Upload/singleUpload'
-  import {createHomeAdvertise, getHomeAdvertise, updateHomeAdvertise} from '@/api/homeAdvertise'
+  import {createHomeAdvertise, getHomeAdvertise, updateHomeAdvertise} from '../../../../api/homeAdvertise'
   const defaultTypeOptions = [
     {
       label: 'PC首页轮播',
