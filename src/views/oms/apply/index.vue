@@ -130,7 +130,7 @@
 </template>
 <script>
   import {formatDate} from '@/utils/date';
-  import {fetchList,deleteApply} from '@/api/returnApply';
+  import {fetchList,deleteApply} from '../../../api/returnApply';
   const defaultListQuery = {
     pageNum: 1,
     pageSize: 10,
