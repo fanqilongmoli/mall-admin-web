@@ -114,8 +114,10 @@
             <p>
               <el-button
                 size="mini"
-                @click="handleShowProduct(scope.$index, scope.row)">查看
+                @click="handleShowProduct(scope.$index, scope.row)">查看评论
               </el-button>
+            </p>
+            <p>
               <el-button
                 size="mini"
                 @click="handleUpdateProduct(scope.$index, scope.row)">编辑

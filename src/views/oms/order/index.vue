@@ -167,10 +167,10 @@
   </div>
 </template>
 <script>
-  import {fetchList, closeOrder, deleteOrder} from '@/api/order'
+  import {fetchList, closeOrder, deleteOrder} from '../../../api/order'
   import {formatDate} from '@/utils/date';
   import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
-  import {orderList} from '../../../api/order'
+  import {orderList, orderDelete, orderClose} from '../../../api/order'
 
   const defaultListQuery = {
     pageNo: 1,
@@ -231,7 +231,7 @@
     },
     filters: {
       formatCreateTime(time) {
-        if (time){
+        if (time) {
           let date = new Date(time);
           return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
         } else {
@@ -263,7 +263,7 @@
         }
       },
       formatPaymentType(value) {
-        if (value === 1){
+        if (value === 1) {
           return '在线支付';
         }
       },
@@ -307,15 +307,20 @@
         this.$router.push({path: '/oms/orderDetail', query: {id: row.id}})
       },
       handleCloseOrder(index, row) {
-        this.closeOrder.dialogVisible = true;
-        this.closeOrder.orderIds = [row.id];
+        //this.closeOrder.dialogVisible = true;
+        //this.closeOrder.orderIds = [row.id];
+        this.closeOrders([row.id])
       },
       handleDeliveryOrder(index, row) {
         let listItem = this.covertOrder(row);
         this.$router.push({path: '/oms/deliverOrderList', query: {list: [listItem]}})
       },
       handleViewLogistics(index, row) {
-        this.logisticsDialogVisible = true;
+        this.$message({
+          message: '暂时还不支持订单追踪',
+          type: 'warning',
+          duration: 1000
+        });
       },
       handleDeleteOrder(index, row) {
         let ids = [];
@@ -396,15 +401,29 @@
           });
         });
       },
+      closeOrders(ids) {
+        this.$confirm('是否要进行该关闭操作?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          orderClose(ids).then(response => {
+            this.$message({
+              message: '关闭成功！',
+              type: 'success',
+              duration: 1000
+            });
+            this.getOrderList();
+          });
+        })
+      },
       deleteOrder(ids) {
         this.$confirm('是否要进行该删除操作?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          let params = new URLSearchParams();
-          params.append("ids", ids);
-          deleteOrder(params).then(response => {
+          orderDelete(ids).then(response => {
             this.$message({
               message: '删除成功！',
               type: 'success',

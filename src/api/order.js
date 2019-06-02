@@ -94,24 +94,64 @@ export function orderList(data) {
 }
 
 /**
- * 获取订单设置
- * @param id
+ * 批量删除订单
+ * @param ids
  */
-export function getOrderSetting(id) {
+export function orderDelete(ids) {
   return request({
-    url: `/mall/admin/orderSetting/${id}`,
-    method: 'get'
+    url: '/mall/admin/order/delete',
+    method: 'post',
+    data: ids
   })
 }
 
 /**
- * 修改指定订单设置
+ * 批量关闭订单
+ * @param ids
+ */
+export function orderClose(ids) {
+  return request({
+    url: '/mall/admin/order/update/close',
+    method: 'post',
+    data: ids
+  })
+}
+/**
+ * 批量发货
+ * @param ids
+ */
+export function orderDelivery(ids) {
+  return request({
+    url: '/mall/admin/order/update/delivery',
+    method: 'post',
+    data: ids
+  })
+}
+
+/**
+ * 备注订单
+ */
+export function orderUpdateNote(id, note, status) {
+  return request({
+    url: '/mall/admin/order/update/note',
+    method: 'post',
+    data: {
+      id,
+      note,
+      status
+    }
+  })
+}
+
+/**
+ * 修改订单费用信息
  * @param data
  */
-export function saveOrderSetting(data) {
+export function orderUpdateReceiverInfo(data) {
   return request({
-    url: '/mall/admin/orderSetting/save',
+    url: '/mall/admin/order/update/moneyInfo',
     method: 'post',
     data: data
   })
 }
+
