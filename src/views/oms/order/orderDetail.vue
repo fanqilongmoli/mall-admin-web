@@ -43,45 +43,28 @@
       </div>
       <div class="table-layout">
         <el-row>
-          <el-col :span="4" class="table-cell-title">订单编号</el-col>
-          <el-col :span="4" class="table-cell-title">发货单流水号</el-col>
+          <el-col :span="8" class="table-cell-title">订单编号</el-col>
           <el-col :span="4" class="table-cell-title">用户账号</el-col>
           <el-col :span="4" class="table-cell-title">支付方式</el-col>
           <el-col :span="4" class="table-cell-title">订单来源</el-col>
           <el-col :span="4" class="table-cell-title">订单类型</el-col>
         </el-row>
         <el-row>
-          <el-col :span="4" class="table-cell">{{order.orderNo}}</el-col>
-          <el-col :span="4" class="table-cell">暂无</el-col>
+          <el-col :span="8" class="table-cell">{{order.orderNo}}</el-col>
           <el-col :span="4" class="table-cell">{{order.commonUser.nickName}}</el-col>
-          <el-col :span="4" class="table-cell">{{order.payType | formatPayType}}</el-col>
+          <el-col :span="4" class="table-cell">微信</el-col>
           <el-col :span="4" class="table-cell">{{order.sourceType | formatSourceType}}</el-col>
           <el-col :span="4" class="table-cell">{{order.orderType | formatOrderType}}</el-col>
         </el-row>
         <el-row>
-          <el-col :span="4" class="table-cell-title">配送方式</el-col>
-          <el-col :span="4" class="table-cell-title">物流单号</el-col>
-          <el-col :span="4" class="table-cell-title">自动确认收货时间</el-col>
-          <el-col :span="4" class="table-cell-title">订单可得优币</el-col>
-          <el-col :span="4" class="table-cell-title">订单可得成长值</el-col>
-          <el-col :span="4" class="table-cell-title">活动信息</el-col>
+          <el-col :span="8" class="table-cell-title">配送方式</el-col>
+          <el-col :span="8" class="table-cell-title">物流单号</el-col>
+          <el-col :span="8" class="table-cell-title">自动确认收货时间</el-col>
         </el-row>
         <el-row>
-          <el-col :span="4" class="table-cell">{{order.deliveryCompany | formatNull}}</el-col>
-          <el-col :span="4" class="table-cell">{{order.deliverySn | formatNull}}</el-col>
-          <el-col :span="4" class="table-cell">{{order.autoConfirmDay}}天</el-col>
-          <el-col :span="4" class="table-cell">{{order.integration}}</el-col>
-          <el-col :span="4" class="table-cell">{{order.growth}}</el-col>
-          <el-col :span="4" class="table-cell">
-            <el-popover
-              placement="top-start"
-              title="活动信息"
-              width="200"
-              trigger="hover"
-              :content="order.promotionInfo">
-              <span slot="reference">{{order.promotionInfo | formatLongText}}</span>
-            </el-popover>
-          </el-col>
+          <el-col :span="8" class="table-cell">{{order.deliveryCompany | formatNull}}</el-col>
+          <el-col :span="8" class="table-cell">{{order.deliverySn | formatNull}}</el-col>
+          <el-col :span="8" class="table-cell">{{order.autoConfirmDay}}天</el-col>
         </el-row>
       </div>
       <div style="margin-top: 20px">
@@ -135,12 +118,12 @@
         </el-table-column>
         <el-table-column label="小计" width="120" align="center">
           <template slot-scope="scope">
-            ￥{{scope.row.product.price*scope.row.quantity}}
+            ￥{{scope.row.totalActualPayment}}
           </template>
         </el-table-column>
       </el-table>
       <div style="float: right;margin: 20px">
-        合计：<span class="color-danger">￥{{order.totalAmount}}</span>
+        合计：<span class="color-danger">￥{{order.actualPayment}}</span>
       </div>
       <div style="margin-top: 60px">
         <svg-icon icon-class="marker" style="color: #606266"></svg-icon>
@@ -156,7 +139,7 @@
         <el-row>
           <el-col :span="6" class="table-cell">￥{{order.payment}}</el-col>
           <el-col :span="6" class="table-cell">￥{{order.actualPayment}}</el-col>
-          <el-col :span="6" class="table-cell">￥{{order.postage}}</el-col>
+          <el-col :span="6" class="table-cell">￥0</el-col>
           <el-col :span="6" class="table-cell">{{order.refundType|formatRefundType}}</el-col>
         </el-row>
       </div>
