@@ -1,19 +1,19 @@
 <template> 
   <div class="detail-container">
     <div>
-      <el-steps :active="formatStepStatus(order.userOrder.status)" finish-status="success" align-center>
-        <el-step title="提交订单" :description="formatTime(order.userOrder.createTime)"></el-step>
-        <el-step title="支付订单" :description="formatTime(order.userOrder.paymentTime)"></el-step>
-        <el-step title="平台发货" :description="formatTime(order.userOrder.sendTime)"></el-step>
-        <el-step title="完成时间" :description="formatTime(order.userOrder.endTime)"></el-step>
-        <el-step title="完成评价" :description="formatTime(order.userOrder.closeTime)"></el-step>
+      <el-steps :active="formatStepStatus(order.status)" finish-status="success" align-center>
+        <el-step title="提交订单" :description="formatTime(order.createTime)"></el-step>
+        <el-step title="支付订单" :description="formatTime(order.paymentTime)"></el-step>
+        <el-step title="平台发货" :description="formatTime(order.sendTime)"></el-step>
+        <el-step title="完成时间" :description="formatTime(order.endTime)"></el-step>
+        <el-step title="完成评价" :description="formatTime(order.closeTime)"></el-step>
       </el-steps>
     </div>
     <el-card shadow="never" style="margin-top: 15px">
       <div class="operate-container">
         <i class="el-icon-warning color-danger" style="margin-left: 20px"></i>
-        <span class="color-danger">当前订单状态：{{order.userOrder.status | formatStatus}}</span>
-        <div class="operate-button-container" v-show="order.userOrder.status===0">
+        <span class="color-danger">当前订单状态：{{order.status | formatStatus}}</span>
+        <div class="operate-button-container" v-show="order.status===0">
           <el-button size="mini" @click="showUpdateReceiverDialog">修改收货人信息</el-button>
           <el-button size="mini">修改商品信息</el-button>
           <el-button size="mini" @click="showUpdateMoneyDialog">修改费用信息</el-button>
@@ -21,18 +21,18 @@
           <el-button size="mini" @click="showCloseOrderDialog">关闭订单</el-button>
           <el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>
         </div>
-        <div class="operate-button-container" v-show="order.userOrder.status===1">
+        <div class="operate-button-container" v-show="order.status===1">
           <el-button size="mini" @click="showUpdateReceiverDialog">修改收货人信息</el-button>
           <el-button size="mini" @click="showMessageDialog">发送站内信</el-button>
           <el-button size="mini">取消订单</el-button>
           <el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>
         </div>
-        <div class="operate-button-container" v-show="order.userOrder.status===2||order.status===3">
+        <div class="operate-button-container" v-show="order.status===2||order.status===3">
           <el-button size="mini" @click="showLogisticsDialog">订单跟踪</el-button>
           <el-button size="mini" @click="showMessageDialog">发送站内信</el-button>
           <el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>
         </div>
-        <div class="operate-button-container" v-show="order.userOrder.status===4">
+        <div class="operate-button-container" v-show="order.status===4">
           <el-button size="mini" @click="handleDeleteOrder">删除订单</el-button>
           <el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>
         </div>
@@ -51,9 +51,9 @@
           <el-col :span="4" class="table-cell-title">订单类型</el-col>
         </el-row>
         <el-row>
-          <el-col :span="4" class="table-cell">{{order.userOrder.orderNo}}</el-col>
+          <el-col :span="4" class="table-cell">{{order.orderNo}}</el-col>
           <el-col :span="4" class="table-cell">暂无</el-col>
-          <el-col :span="4" class="table-cell">{{order.userOrder.commonUser.nickName}}</el-col>
+          <el-col :span="4" class="table-cell">{{order.commonUser.nickName}}</el-col>
           <el-col :span="4" class="table-cell">{{order.payType | formatPayType}}</el-col>
           <el-col :span="4" class="table-cell">{{order.sourceType | formatSourceType}}</el-col>
           <el-col :span="4" class="table-cell">{{order.orderType | formatOrderType}}</el-col>
@@ -95,9 +95,9 @@
           <el-col :span="8" class="table-cell-title">收货地址</el-col>
         </el-row>
         <el-row>
-          <el-col :span="8" class="table-cell">{{order.userOrder.shipping.receiverName}}</el-col>
-          <el-col :span="8" class="table-cell">{{order.userOrder.shipping.receiverPhone}}</el-col>
-          <el-col :span="8" class="table-cell">{{order.userOrder.shipping | formatAddress}}</el-col>
+          <el-col :span="8" class="table-cell">{{order.shipping.receiverName}}</el-col>
+          <el-col :span="8" class="table-cell">{{order.shipping.receiverPhone}}</el-col>
+          <el-col :span="8" class="table-cell">{{order.shipping | formatAddress}}</el-col>
         </el-row>
       </div>
       <div style="margin-top: 20px">
@@ -106,38 +106,36 @@
       </div>
       <el-table
         ref="orderItemTable"
-        :data="order.orderItemList"
+        :data="order.userOrderItems"
         style="width: 100%;margin-top: 20px" border>
         <el-table-column label="商品图片" width="120" align="center">
           <template slot-scope="scope">
-            <img :src="scope.row.productPic" style="height: 80px">
+            <img :src="scope.row.product.mainImage" style="height: 80px">
           </template>
         </el-table-column>
         <el-table-column label="商品名称" align="center">
           <template slot-scope="scope">
-            <p>{{scope.row.productName}}</p>
-            <p>品牌：{{scope.row.productBrand}}</p>
+            <p>{{scope.row.product.name}}</p>
           </template>
         </el-table-column>
-        <el-table-column label="价格/货号" width="120" align="center">
+        <el-table-column label="单价" width="120" align="center">
           <template slot-scope="scope">
-            <p>价格：￥{{scope.row.productPrice}}</p>
-            <p>货号：{{scope.row.productSn}}</p>
+            <p>￥{{scope.row.product.price}}</p>
           </template>
         </el-table-column>
-        <el-table-column label="属性" width="120" align="center">
-          <template slot-scope="scope">
-            {{scope.row.productAttr | formatProductAttr}}
-          </template>
-        </el-table-column>
+        <!--<el-table-column label="属性" width="120" align="center">-->
+          <!--<template slot-scope="scope">-->
+            <!--{{scope.row.productAttr | formatProductAttr}}-->
+          <!--</template>-->
+        <!--</el-table-column>-->
         <el-table-column label="数量" width="120" align="center">
           <template slot-scope="scope">
-            {{scope.row.productQuantity}}
+            {{scope.row.quantity}}
           </template>
         </el-table-column>
         <el-table-column label="小计" width="120" align="center">
           <template slot-scope="scope">
-            ￥{{scope.row.productPrice*scope.row.productQuantity}}
+            ￥{{scope.row.product.price*scope.row.quantity}}
           </template>
         </el-table-column>
       </el-table>
@@ -156,10 +154,10 @@
           <el-col :span="6" class="table-cell-title">退差价方式</el-col>
         </el-row>
         <el-row>
-          <el-col :span="6" class="table-cell">￥{{order.userOrder.payment}}</el-col>
-          <el-col :span="6" class="table-cell">￥{{order.userOrder.actualPayment}}</el-col>
-          <el-col :span="6" class="table-cell">￥{{order.userOrder.postage}}</el-col>
-          <el-col :span="6" class="table-cell">{{order.userOrder.refundType|formatRefundType}}</el-col>
+          <el-col :span="6" class="table-cell">￥{{order.payment}}</el-col>
+          <el-col :span="6" class="table-cell">￥{{order.actualPayment}}</el-col>
+          <el-col :span="6" class="table-cell">￥{{order.postage}}</el-col>
+          <el-col :span="6" class="table-cell">{{order.refundType|formatRefundType}}</el-col>
         </el-row>
       </div>
       <div style="margin-top: 20px">
