@@ -4,7 +4,7 @@
       <el-form-item label="商品相册：" prop="subImages">
         <multi-upload v-model="value.subImages"/>
       </el-form-item>
-      <el-form-item label="规格参数：">
+      <el-form-item label="商品详情：">
         <tinymce :width="595" :height="300" v-model="value.detail"></tinymce>
       </el-form-item>
       <el-form-item style="text-align: center">
