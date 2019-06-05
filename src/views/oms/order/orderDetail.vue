@@ -16,8 +16,8 @@
         <div class="operate-button-container" v-show="order.status===0">
           <el-button size="mini" @click="showUpdateReceiverDialog">修改收货人信息</el-button>
           <el-button size="mini">修改商品信息</el-button>
-          <el-button size="mini" @click="showUpdateMoneyDialog">修改费用信息</el-button>
-          <el-button size="mini" @click="showMessageDialog">发送站内信</el-button>
+          <!--<el-button size="mini" @click="showUpdateMoneyDialog">修改费用信息</el-button>-->
+          <!--<el-button size="mini" @click="showMessageDialog">发送站内信</el-button>-->
           <el-button size="mini" @click="showCloseOrderDialog">关闭订单</el-button>
           <el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>
         </div>
@@ -106,11 +106,6 @@
             <p>￥{{scope.row.product.price}}</p>
           </template>
         </el-table-column>
-        <!--<el-table-column label="属性" width="120" align="center">-->
-          <!--<template slot-scope="scope">-->
-            <!--{{scope.row.productAttr | formatProductAttr}}-->
-          <!--</template>-->
-        <!--</el-table-column>-->
         <el-table-column label="数量" width="120" align="center">
           <template slot-scope="scope">
             {{scope.row.quantity}}
@@ -119,6 +114,11 @@
         <el-table-column label="小计" width="120" align="center">
           <template slot-scope="scope">
             ￥{{scope.row.totalActualPayment}}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="120" align="center">
+          <template slot-scope="scope">
+            <el-button @click="showUpdateMoneyDialog(scope.row)">修改差价</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -215,44 +215,16 @@
       <el-button type="primary" @click="handleUpdateReceiverInfo">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="修改费用信息"
+    <!--修改订单差价-->
+    <el-dialog title="修改订单差价"
                :visible.sync="moneyDialogVisible"
                width="40%">
       <div class="table-layout">
         <el-row>
-          <el-col :span="6" class="table-cell-title">商品合计</el-col>
-          <el-col :span="6" class="table-cell-title">运费</el-col>
-          <el-col :span="6" class="table-cell-title">优惠券</el-col>
-          <el-col :span="6" class="table-cell-title">积分抵扣</el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="6" class="table-cell">￥{{order.totalAmount}}</el-col>
-          <el-col :span="6" class="table-cell">
-            <el-input v-model.number="moneyInfo.freightAmount" size="mini">
+          <el-col :span="24" class="table-cell">
+            <el-input v-model.number="moneyInfo.totalActualPayment" size="mini">
               <template slot="prepend">￥</template>
             </el-input>
-          </el-col>
-          <el-col :span="6" class="table-cell">-￥{{order.couponAmount}}</el-col>
-          <el-col :span="6" class="table-cell">-￥{{order.integrationAmount}}</el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="6" class="table-cell-title">活动优惠</el-col>
-          <el-col :span="6" class="table-cell-title">折扣金额</el-col>
-          <el-col :span="6" class="table-cell-title">订单总金额</el-col>
-          <el-col :span="6" class="table-cell-title">应付款金额</el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="6" class="table-cell">-￥{{order.promotionAmount}}</el-col>
-          <el-col :span="6" class="table-cell">
-            <el-input v-model.number="moneyInfo.discountAmount" size="mini">
-              <template slot="prepend">-￥</template>
-            </el-input>
-          </el-col>
-          <el-col :span="6" class="table-cell">
-            <span class="color-danger">￥{{order.totalAmount+moneyInfo.freightAmount}}</span>
-          </el-col>
-          <el-col :span="6" class="table-cell">
-            <span class="color-danger">￥{{order.payAmount+moneyInfo.freightAmount-moneyInfo.discountAmount}}</span>
           </el-col>
         </el-row>
       </div>
@@ -320,7 +292,8 @@
     updateMoneyInfo,
     closeOrder,
     updateOrderNote,
-    deleteOrder
+    deleteOrder,
+    orderUpdateReceiverInfo
   } from '../../../api/order';
   import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
   import {formatDate} from '@/utils/date';
@@ -328,14 +301,8 @@
 
   const defaultReceiverInfo = {
     orderId: null,
-    receiverName: null,
-    receiverPhone: null,
-    receiverPostCode: null,
-    receiverDetailAddress: null,
-    receiverProvince: null,
-    receiverCity: null,
-    receiverRegion: null,
-    status: null
+    orderItemId: null,
+    totalActualPayment: null
   };
   export default {
     name: 'orderDetail',
@@ -347,7 +314,7 @@
         receiverDialogVisible: false,
         receiverInfo: Object.assign({}, defaultReceiverInfo),
         moneyDialogVisible: false,
-        moneyInfo: {orderId: null, freightAmount: 0, discountAmount: 0, status: null},
+        moneyInfo: {orderId: null, orderItemId: null, totalActualPayment: 0},
         messageDialogVisible: false,
         message: {title: null, content: null},
         closeDialogVisible: false,
@@ -512,7 +479,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          updateReceiverInfo(this.receiverInfo).then(response => {
+          orderUpdateReceiverInfo(this.receiverInfo).then(response => {
             this.receiverDialogVisible = false;
             this.$message({
               type: 'success',
@@ -524,12 +491,11 @@
           });
         });
       },
-      showUpdateMoneyDialog() {
+      showUpdateMoneyDialog(data) {
+        console.log('data',data)
         this.moneyDialogVisible = true;
         this.moneyInfo.orderId = this.order.id;
-        this.moneyInfo.freightAmount = this.order.freightAmount;
-        this.moneyInfo.discountAmount = this.order.discountAmount;
-        this.moneyInfo.status = this.order.status;
+        this.moneyInfo.orderItemId = data.id;
       },
       handleUpdateMoneyInfo() {
         this.$confirm('是否要修改费用信息?', '提示', {
@@ -537,7 +503,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          updateMoneyInfo(this.moneyInfo).then(response => {
+          orderUpdateReceiverInfo(this.moneyInfo).then(response => {
             this.moneyDialogVisible = false;
             this.$message({
               type: 'success',
