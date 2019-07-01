@@ -107,6 +107,11 @@ export function deleteProduct(data) {
  */
 export function saveProduct(data) {
   data.categoryId = data.categoryId ? data.categoryId[1] : null
+  let subImagesStr = '';
+  data.subImages.forEach(item => {
+    subImagesStr+=`${item},`
+  });
+  data.subImages = subImagesStr;
   return request({
     url: 'mall/admin/product',
     method: 'post',
