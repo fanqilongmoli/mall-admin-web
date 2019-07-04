@@ -106,16 +106,18 @@ export function deleteProduct(data) {
  * @param data
  */
 export function saveProduct(data) {
-  data.categoryId = data.categoryId ? data.categoryId[1] : null
+
+  const tempData = Object.assign({},data);
+  tempData.categoryId = tempData.categoryId ? tempData.categoryId[1] : null
   let subImagesStr = '';
-  data.subImages.forEach(item => {
+  tempData.subImages.forEach(item => {
     subImagesStr+=`${item},`
   });
-  data.subImages = subImagesStr;
+  tempData.subImages = subImagesStr;
   return request({
     url: 'mall/admin/product',
     method: 'post',
-    data: data
+    data: tempData
   })
 }
 

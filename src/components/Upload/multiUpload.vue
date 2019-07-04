@@ -48,7 +48,7 @@
     computed: {
       fileList() {
         const temp = [];
-        console.log('qwqwqw', this.value);
+        console.log('multiUpload', this.value);
         this.value.forEach(item => {
           temp.push({
             url: item

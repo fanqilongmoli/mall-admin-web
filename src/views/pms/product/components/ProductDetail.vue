@@ -67,10 +67,14 @@
         getDetail(this.$route.query.id).then(response => {
           const data = response.data;
           data.categoryId = [data.category.parentId, data.category.id];
+          const strings = data.subImages.split(",");
+          strings.pop();
+          data.subImages = strings;
           this.productParam = data;
           console.log("this.productParam", this.productParam)
         });
       }
+      console.log('ProductDetail', this.productParam);
     },
     methods: {
       hideAll() {
@@ -104,6 +108,7 @@
               message: '提交成功',
               duration: 1000
             });
+            this.productParam.subImages.length = 0;
             this.$router.back();
           });
 
