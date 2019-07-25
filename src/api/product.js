@@ -107,11 +107,11 @@ export function deleteProduct(data) {
  */
 export function saveProduct(data) {
 
-  const tempData = Object.assign({},data);
+  const tempData = Object.assign({}, data);
   tempData.categoryId = tempData.categoryId ? tempData.categoryId[1] : null
   let subImagesStr = '';
   tempData.subImages.forEach(item => {
-    subImagesStr+=`${item},`
+    subImagesStr += `${item},`
   });
   tempData.subImages = subImagesStr;
   return request({
@@ -129,6 +129,18 @@ export function getDetail(id) {
   return request({
     url: `mall/admin/product/${id}`,
     method: 'get',
+  })
+}
+
+/**
+ * 删除商品规格
+ * @param id
+ */
+export function deleteSpecs(id) {
+  return request({
+    url: `mall/admin/specs/delete`,
+    method: 'get',
+    params: {id}
   })
 }
 

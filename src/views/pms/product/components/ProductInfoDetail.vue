@@ -20,21 +20,6 @@
       <el-form-item label="商品正方形图：" prop="squareImage">
         <single-upload v-model="value.squareImage"/>
       </el-form-item>
-      <el-form-item label="商品规格：" prop="specs">
-        <el-input v-model="value.specs" placeholder="你可以输入 300g/盒"></el-input>
-      </el-form-item>
-      <el-form-item label="商品成本价：" prop="costPrice">
-        <el-input v-model="value.costPrice" type="number"></el-input>
-      </el-form-item>
-      <el-form-item label="商品原价：">
-        <el-input v-model="value.originalPrice" type="number"></el-input>
-      </el-form-item>
-      <el-form-item label="商品现单价：" prop="price">
-        <el-input v-model="value.price" type="number"></el-input>
-      </el-form-item>
-      <el-form-item label="库存：" prop="stock">
-        <el-input v-model="value.stock" type="number"></el-input>
-      </el-form-item>
       <el-form-item label="标签：">
         <el-input v-model="value.label" maxlength="4" prop="label"></el-input>
       </el-form-item>

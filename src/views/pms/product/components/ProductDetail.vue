@@ -45,6 +45,7 @@
     status: null, //商品状态 1下架 2在售 3新品 4爆款
     subImages: [], //商品相册
     detail: '', // 商品详情
+    productSpecsList: [] //商品规格列表
   };
   export default {
     name: 'ProductDetail',
