@@ -79,7 +79,7 @@
       },
       handleUploadSuccess(res, file) {
         //this.fileList.push({name: file.name, url: `http://prqmm1g1p.bkt.clouddn.com/${file.response.key}`});
-        this.value.push(`http://ptsoyxuli.bkt.clouddn.com/${file.response.key}`);
+        this.value.push(`http://img.cdn.freshth.top/${file.response.key}`);
         // this.listObj.push({
         //   name: file.response.key,
         //   url: this.value

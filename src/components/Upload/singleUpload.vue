@@ -81,7 +81,7 @@
       handleUploadSuccess(res, file) {
         this.showFileList = true;
         this.fileList.pop();
-        this.fileList.push({name: file.name, url: `http://ptsoyxuli.bkt.clouddn.com/${this.uptoken.key}`});
+        this.fileList.push({name: file.name, url: `http://img.cdn.freshth.top/${this.uptoken.key}`});
         this.emitInput(this.fileList[0].url);
         console.log("this.fileList", this.fileList)
       }
