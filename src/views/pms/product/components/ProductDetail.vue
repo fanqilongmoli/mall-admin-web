@@ -40,6 +40,7 @@
     price: null, // 商品现单价
     stock: 0, // 库存
     label: '', // 标签
+    canRefund: 0,
     checkStock: '1', //校验库存
     sort: 0, //排序
     status: null, //商品状态 1下架 2在售 3新品 4爆款

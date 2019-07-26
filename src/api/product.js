@@ -144,4 +144,28 @@ export function deleteSpecs(id) {
   })
 }
 
+/**
+ * 获取对应的商品的规格列表
+ * @param productId
+ */
+export function listSpecs(productId) {
+  return request({
+    url: `mall/admin/specs/list`,
+    method: 'get',
+    params: {productId}
+  })
+}
+
+/**
+ * 获取对应的商品的规格列表
+ * @param specs
+ */
+export function saveSpecsList(specs) {
+  return request({
+    url: `mall/admin/specs/saveList`,
+    method: 'post',
+    data: specs
+  })
+}
+
 

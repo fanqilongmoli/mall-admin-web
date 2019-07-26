@@ -73,26 +73,15 @@
             <p>{{scope.row.name}}</p>
           </template>
         </el-table-column>
-
-        <el-table-column label="成本价" width="120" align="center">
-          <template slot-scope="scope">
-            <p>￥{{scope.row.costPrice}}</p>
-          </template>
-        </el-table-column>
         <el-table-column label="原价" width="120" align="center">
           <template slot-scope="scope">
             <p>￥{{scope.row.originalPrice}}</p>
           </template>
         </el-table-column>
-        <el-table-column label="现单价" width="120" align="center">
+        <el-table-column label="SKU库存" width="100" align="center">
           <template slot-scope="scope">
-            <p>￥{{scope.row.price}}</p>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="标签" width="140" align="center">
-          <template slot-scope="scope">
-            <p>{{scope.row.label}}</p>
+            <el-button type="primary" icon="el-icon-edit" @click="handleShowSkuEditDialog(scope.$index, scope.row)"
+                       circle></el-button>
           </template>
         </el-table-column>
         <el-table-column label="状态" width="140" align="center">
@@ -146,10 +135,76 @@
         :total="total">
       </el-pagination>
     </div>
+    <el-dialog
+      title="编辑货品信息"
+      :visible.sync="editSkuInfo.dialogVisible"
+      width="40%">
+      <!--<span>商品货号：</span>-->
+      <!--<span>{{editSkuInfo.productSn}}</span>-->
+      <!--<el-input placeholder="按sku编号搜索" v-model="editSkuInfo.keyword" size="small" style="width: 50%;margin-left: 20px">-->
+      <!--<el-button slot="append" icon="el-icon-search" @click="handleSearchEditSku"></el-button>-->
+      <!--</el-input>-->
+      <el-table style="width: 100%;margin-top: 20px"
+                :data="editSkuInfo.stockList"
+                border>
+        <el-table-column
+          label="规格名称"
+          width="80"
+          align="center">
+          <template slot-scope="scope">
+            {{scope.row.specsName}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="SKU编码"
+          width="80"
+          align="center">
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.skuNo"></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="库存"
+          width="80"
+          align="center">
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.stock"></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="商品成本"
+          width="80"
+          align="center">
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.costPrice"></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="商品现单价"
+          align="center">
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.price"></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="售卖方式"
+          align="center">
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.saleStyle"></el-input>
+          </template>
+        </el-table-column>
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editSkuInfo.dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleEditSkuConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
+
+
 </template>
 <script>
-  import {getProductList, deleteProduct} from '../../../api/product'
+  import {getProductList, deleteProduct, listSpecs, saveSpecsList} from '../../../api/product'
   import {getProductCateList} from '../../../api/productCate'
 
   const defaultListQuery = {
@@ -195,17 +250,23 @@
           label: 'name',
           value: 'id',
           children: 'children'
-        }
-
+        },
+        editSkuInfo: {
+          dialogVisible: false,
+          productId: null,
+          productSn: '',
+          productAttributeCategoryId: null,
+          stockList: [],
+          productAttr: [],
+          keyword: null
+        },
       }
     },
     created() {
       this.getList();
       this.getProductCateLists();
     },
-    watch: {
-
-    },
+    watch: {},
     filters: {
       verifyStatusFilter(value) {
         return value === 1 ? "下架" : value === 2 ? "2在售" : value === 3 ? "新品" : "爆款";
@@ -265,7 +326,38 @@
       handleShowProduct(index, row) {
         console.log("handleShowProduct", row);
       },
+      handleShowSkuEditDialog(index, row) {
 
+        // 获取对应商品的规格列表
+        listSpecs(row.id).then(response => {
+          this.editSkuInfo.dialogVisible = true;
+          this.editSkuInfo.stockList = response.data;
+        })
+      },
+      handleEditSkuConfirm() {
+        if (this.editSkuInfo.stockList == null || this.editSkuInfo.stockList.length <= 0) {
+          this.$message({
+            message: '暂无sku信息',
+            type: 'warning',
+            duration: 1000
+          });
+          return
+        }
+        this.$confirm('是否要进行修改', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          saveSpecsList(this.editSkuInfo.stockList).then(response => {
+            this.$message({
+              message: '修改成功',
+              type: 'success',
+              duration: 1000
+            });
+            this.editSkuInfo.dialogVisible = false;
+          });
+        });
+      },
       updateDeleteStatus(ids) {
         //let params = new URLSearchParams();
         //params.append('ids', ids);

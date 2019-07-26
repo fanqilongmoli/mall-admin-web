@@ -20,12 +20,21 @@
       <el-form-item label="商品正方形图：" prop="squareImage">
         <single-upload v-model="value.squareImage"/>
       </el-form-item>
+      <el-form-item label="商品原价：">
+        <el-input v-model="value.originalPrice" type="number"></el-input>
+      </el-form-item>
       <el-form-item label="标签：">
         <el-input v-model="value.label" maxlength="4" prop="label"></el-input>
       </el-form-item>
       <el-form-item label="校验库存">
         <el-switch
           v-model="value.checkStock"
+          active-value="1"
+          inactive-value="0"/>
+      </el-form-item>
+      <el-form-item label="是否可以退/补差价">
+        <el-switch
+          v-model="value.canRefund"
           active-value="1"
           inactive-value="0"/>
       </el-form-item>
