@@ -82,26 +82,11 @@
         <el-table-column label="支付类型" width="120" align="center">
           <template slot-scope="scope">{{scope.row.paymentType | formatPaymentType}}</template>
         </el-table-column>
-        <el-table-column label="运费" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.postage }}</template>
-        </el-table-column>
         <el-table-column label="订单状态" width="120" align="center">
           <template slot-scope="scope">{{scope.row.status | formatStatus}}</template>
         </el-table-column>
-        <el-table-column label="订单备注" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.orderNote }}</template>
-        </el-table-column>
-        <el-table-column label="支付时间" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.paymentTime | formatCreateTime}}</template>
-        </el-table-column>
-        <el-table-column label="发货时间" width="120" align="center">
+        <el-table-column label="发货时间" align="center">
           <template slot-scope="scope">{{scope.row.sendTime | formatCreateTime}}</template>
-        </el-table-column>
-        <el-table-column label="完成时间" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.endTime | formatCreateTime}}</template>
-        </el-table-column>
-        <el-table-column label="关闭时间" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.closeTime | formatCreateTime }}</template>
         </el-table-column>
         <el-table-column label="操作" width="200" align="center">
           <template slot-scope="scope">
@@ -123,13 +108,13 @@
             <el-button
               size="mini"
               @click="handleViewLogistics(scope.$index, scope.row)"
-              v-show="scope.row.status===2||scope.row.status===3">订单跟踪
+              v-show="scope.row.status===2||scope.row.status===5">订单跟踪
             </el-button>
             <el-button
               size="mini"
               type="danger"
               @click="handleDeleteOrder(scope.$index, scope.row)"
-              v-show="scope.row.status===4">删除订单
+              v-show="scope.row.status===6">删除订单
             </el-button>
           </template>
         </el-table-column>
@@ -211,16 +196,24 @@
             value: 2
           },
           {
-            label: '已完成',
+            label: '待补差价',
             value: 3
           },
           {
-            label: '已关闭',
+            label: '待退差价',
             value: 4
           },
           {
-            label: '无效订单',
+            label: '已完成',
             value: 5
+          },
+          {
+            label: '已关闭',
+            value: 6
+          },
+          {
+            label: '无效订单',
+            value: 7
           }
         ],
         logisticsDialogVisible: false
@@ -268,16 +261,23 @@
         }
       },
       formatStatus(value) {
+        // 订单状态：0->待付款；1->待发货；2->已发货；3->待补差价 4->待退差价 5->已完成；6->已关闭；7->无效订单
         if (value === 1) {
           return '待发货';
         } else if (value === 2) {
           return '已发货';
         } else if (value === 3) {
-          return '已完成';
+          return '待补差价';
         } else if (value === 4) {
-          return '已关闭';
+          return '待退差价';
         } else if (value === 5) {
-          return '无效订单';
+          return '已完成';
+        } else if (value === 5){
+          return '已关闭'
+        } else if (value === 6){
+          return '已关闭'
+        }else if (value === 7){
+          return '无效订单'
         } else {
           return '待付款';
         }

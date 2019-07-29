@@ -27,12 +27,12 @@
           <el-button size="mini">取消订单</el-button>
           <el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>
         </div>
-        <div class="operate-button-container" v-show="order.status===2||order.status===3">
-          <el-button size="mini" @click="showLogisticsDialog">订单跟踪</el-button>
+        <div class="operate-button-container" v-show="order.status===2||order.status===5">
+          <el-button size="mini" @click="showLogisticsDialog">确认收货</el-button>
           <el-button size="mini" @click="showMessageDialog">发送站内信</el-button>
           <el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>
         </div>
-        <div class="operate-button-container" v-show="order.status===4">
+        <div class="operate-button-container" v-show="order.status===6">
           <el-button size="mini" @click="handleDeleteOrder">删除订单</el-button>
           <el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>
         </div>
@@ -93,17 +93,17 @@
         style="width: 100%;margin-top: 20px" border>
         <el-table-column label="商品图片" width="120" align="center">
           <template slot-scope="scope">
-            <img :src="scope.row.product.mainImage" style="height: 80px">
+            <img :src="scope.row.productSpecs.product.mainImage" style="height: 80px">
           </template>
         </el-table-column>
         <el-table-column label="商品名称" align="center">
           <template slot-scope="scope">
-            <p>{{scope.row.product.name}}</p>
+            <p>{{scope.row.productSpecs.product.name}}</p>
           </template>
         </el-table-column>
         <el-table-column label="单价" width="120" align="center">
           <template slot-scope="scope">
-            <p>￥{{scope.row.product.price}}</p>
+            <p>￥{{scope.row.productSpecs.product.price}}</p>
           </template>
         </el-table-column>
         <el-table-column label="数量" width="120" align="center">
@@ -113,7 +113,7 @@
         </el-table-column>
         <el-table-column label="小计" width="120" align="center">
           <template slot-scope="scope">
-            ￥{{scope.row.totalActualPayment}}
+            ￥{{scope.row.totalPayment}}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="120" align="center">
@@ -293,7 +293,8 @@
     closeOrder,
     updateOrderNote,
     deleteOrder,
-    orderUpdateReceiverInfo
+    orderUpdateReceiverInfo,
+    confirmReceiveGood
   } from '../../../api/order';
   import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
   import {formatDate} from '@/utils/date';
@@ -385,16 +386,23 @@
         return str;
       },
       formatStatus(value) {
+        // 订单状态：0->待付款；1->待发货；2->已发货；3->待补差价 4->待退差价 5->已完成；6->已关闭；7->无效订单
         if (value === 1) {
           return '待发货';
         } else if (value === 2) {
           return '已发货';
         } else if (value === 3) {
-          return '已完成';
+          return '待补差价';
         } else if (value === 4) {
-          return '已关闭';
+          return '待退差价';
         } else if (value === 5) {
-          return '无效订单';
+          return '已完成';
+        } else if (value === 5){
+          return '已关闭'
+        } else if (value === 6){
+          return '已关闭'
+        }else if (value === 7){
+          return '无效订单'
         } else {
           return '待付款';
         }
@@ -451,7 +459,7 @@
         } else if (value === 2) {
           //已发货
           return 3;
-        } else if (value === 3) {
+        } else if (value === 5) {
           //已完成
           return 4;
         } else {
@@ -605,7 +613,16 @@
         })
       },
       showLogisticsDialog() {
-        this.logisticsDialogVisible = true;
+        // 确认收货
+        confirmReceiveGood(this.order.id).then(
+          response=>{
+            this.$message({
+              message: '确认收货成功',
+              type: 'success',
+              duration: 1000
+            });
+          }
+        )
       }
     }
   }

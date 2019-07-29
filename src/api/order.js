@@ -155,4 +155,15 @@ export function orderUpdateReceiverInfo(data) {
   })
 }
 
+/**
+ * 确认收货
+ * @param id
+ */
+export function confirmReceiveGood(id) {
+  return request({
+    url: `/mall/admin/order/update/confirmReceiveGood/${id}`,
+    method: 'get',
+  })
+}
+
 
