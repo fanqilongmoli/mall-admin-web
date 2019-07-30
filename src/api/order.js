@@ -116,6 +116,7 @@ export function orderClose(ids) {
     data: ids
   })
 }
+
 /**
  * 批量发货
  * @param ids
@@ -163,6 +164,14 @@ export function confirmReceiveGood(id) {
   return request({
     url: `/mall/admin/order/update/confirmReceiveGood/${id}`,
     method: 'get',
+  })
+}
+
+export function delivery(ids) {
+  return request({
+    url: `/mall/admin/order/update/delivery`,
+    method: 'post',
+    data: ids
   })
 }
 

@@ -152,7 +152,7 @@
   </div>
 </template>
 <script>
-  import {fetchList, closeOrder, deleteOrder} from '../../../api/order'
+  import {fetchList, closeOrder, deleteOrder, delivery} from '../../../api/order'
   import {formatDate} from '@/utils/date';
   import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
   import {orderList, orderDelete, orderClose} from '../../../api/order'
@@ -272,11 +272,11 @@
           return '待退差价';
         } else if (value === 5) {
           return '已完成';
-        } else if (value === 5){
+        } else if (value === 5) {
           return '已关闭'
-        } else if (value === 6){
+        } else if (value === 6) {
           return '已关闭'
-        }else if (value === 7){
+        } else if (value === 7) {
           return '无效订单'
         } else {
           return '待付款';
@@ -312,8 +312,13 @@
         this.closeOrders([row.id])
       },
       handleDeliveryOrder(index, row) {
-        let listItem = this.covertOrder(row);
-        this.$router.push({path: '/oms/deliverOrderList', query: {list: [listItem]}})
+        delivery([row.id]).then(response => {
+          this.$message({
+            message: '发货成功',
+            type: 'success',
+            duration: 1000
+          });
+        })
       },
       handleViewLogistics(index, row) {
         this.$message({

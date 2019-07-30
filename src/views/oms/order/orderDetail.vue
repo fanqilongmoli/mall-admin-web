@@ -21,11 +21,12 @@
           <el-button size="mini" @click="showCloseOrderDialog">关闭订单</el-button>
           <el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>
         </div>
+        <!--代发货-->
         <div class="operate-button-container" v-show="order.status===1">
-          <el-button size="mini" @click="showUpdateReceiverDialog">修改收货人信息</el-button>
-          <el-button size="mini" @click="showMessageDialog">发送站内信</el-button>
+          <!--<el-button size="mini" @click="showUpdateReceiverDialog">修改收货人信息</el-button>-->
+          <!--<el-button size="mini" @click="showMessageDialog">发送站内信</el-button>-->
           <el-button size="mini">取消订单</el-button>
-          <el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>
+          <!--<el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>-->
         </div>
         <div class="operate-button-container" v-show="order.status===2||order.status===5">
           <el-button size="mini" @click="showLogisticsDialog">确认收货</el-button>
@@ -103,7 +104,7 @@
         </el-table-column>
         <el-table-column label="单价" width="120" align="center">
           <template slot-scope="scope">
-            <p>￥{{scope.row.productSpecs.product.price}}</p>
+            <p>￥{{scope.row.productSpecs.price}}</p>
           </template>
         </el-table-column>
         <el-table-column label="数量" width="120" align="center">
@@ -118,12 +119,12 @@
         </el-table-column>
         <el-table-column label="操作" width="120" align="center">
           <template slot-scope="scope">
-            <el-button @click="showUpdateMoneyDialog(scope.row)">修改差价</el-button>
+            <el-button v-show="order.status === 1" @click="showUpdateMoneyDialog(scope.row)">修改差价</el-button>
           </template>
         </el-table-column>
       </el-table>
       <div style="float: right;margin: 20px">
-        合计：<span class="color-danger">￥{{order.actualPayment}}</span>
+        合计：<span class="color-danger">￥{{order.payment}}</span>
       </div>
       <div style="margin-top: 60px">
         <svg-icon icon-class="marker" style="color: #606266"></svg-icon>
