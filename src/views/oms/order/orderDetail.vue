@@ -223,9 +223,10 @@
       <div class="table-layout">
         <el-row>
           <el-col :span="24" class="table-cell">
-            <el-input v-model.number="moneyInfo.totalActualPayment" size="mini">
+            <el-input-number v-model="moneyInfo.totalActualPayment" size="mini"
+                             controls-position="right" :precision="2" :step="0.01">
               <template slot="prepend">￥</template>
-            </el-input>
+            </el-input-number>
           </el-col>
         </el-row>
       </div>
