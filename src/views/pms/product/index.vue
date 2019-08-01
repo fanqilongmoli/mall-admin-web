@@ -152,7 +152,7 @@
           width="80"
           align="center">
           <template slot-scope="scope">
-            {{scope.row.specsName}}
+            <el-input v-model="scope.row.specsName"></el-input>
           </template>
         </el-table-column>
         <el-table-column

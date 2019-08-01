@@ -1,6 +1,6 @@
 <template>
   <div style="margin-top: 50px">
-    <el-form :model="value" ref="productSaleForm" label-width="120px" style="width: 720px" size="small">
+    <el-form :model="value" ref="productSaleForm" label-width="120px" style="width: 100%" size="small">
       <el-form-item label="商品规格：">
         <el-card>
           <el-input v-model="addProductAttrValue" style="width: 160px;margin-left: 10px" clearable></el-input>
@@ -11,15 +11,15 @@
                     border>
             <el-table-column
               label="规格名称"
-              width="80"
+              width="120"
               align="center">
               <template slot-scope="scope">
-                {{scope.row.specsName}}
+                <el-input v-model="scope.row.specsName"></el-input>
               </template>
             </el-table-column>
             <el-table-column
               label="SKU编码"
-              width="80"
+              width="120"
               align="center">
               <template slot-scope="scope">
                 <el-input v-model="scope.row.skuNo"></el-input>
@@ -73,7 +73,7 @@
         <multi-upload v-model="value.subImages"/>
       </el-form-item>
       <el-form-item label="商品详情：">
-        <tinymce :width="595" :height="300" v-model="value.detail"></tinymce>
+        <tinymce :width="800" :height="300" v-model="value.detail"></tinymce>
       </el-form-item>
       <el-form-item style="text-align: center">
         <el-button size="medium" @click="handlePrev">上一步，填写商品促销</el-button>
@@ -148,7 +148,7 @@
       },
       // 删除规格
       handleRemoveProductSku(index, row) {
-        if (this.isEdit) {
+        if (row.id) {
           // 编辑状态 调用接口删除
           const list = this.value.productSpecsList;
           deleteSpecs(row.id).then(response => {
