@@ -31,11 +31,12 @@
           </el-form-item>
           <el-form-item label="提交时间：">
             <el-date-picker
-              class="input-width"
               v-model="listQuery.createTime"
-              value-format="yyyy-MM-dd"
-              type="date"
-              placeholder="请选择时间">
+              type="datetimerange"
+              range-separator="至"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
             </el-date-picker>
           </el-form-item>
           <el-form-item label="订单状态：">

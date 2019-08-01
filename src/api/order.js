@@ -88,7 +88,8 @@ export function orderList(data) {
       receiverName: data.receiverName,
       receiverPhone: data.receiverPhone,
       status: data.status,
-      createTime: data.createTime
+      leftTime: data.createTime ? data.createTime[0] : "",
+      rightTime: data.createTime ? data.createTime[1] : ""
     }
   })
 }
