@@ -23,6 +23,12 @@
       <el-form-item label="商品原价：">
         <el-input v-model="value.originalPrice" type="number"></el-input>
       </el-form-item>
+      <el-form-item label="商品单价：" prop="price">
+        <el-input v-model="value.price" type="number"></el-input>
+      </el-form-item>
+      <el-form-item label="销量：" prop="price">
+        <el-input v-model="value.salesVolume" type="number"></el-input>
+      </el-form-item>
       <el-form-item label="标签：">
         <el-input v-model="value.label" maxlength="4" prop="label"></el-input>
       </el-form-item>
@@ -116,7 +122,8 @@
           costPrice: [{required: true, message: '该项为必填项', trigger: 'blur'}],
           price: [{required: true, message: '该项为必填项', trigger: 'blur'}],
           stock: [{required: true, message: '该项为必填项', trigger: 'blur'}],
-          status: [{required: true, message: '该项为必填项', trigger: 'blur'}]
+          status: [{required: true, message: '该项为必填项', trigger: 'blur'}],
+          salesVolume: [{required: true, message: '该项为必填项', trigger: 'blur'}]
         }
       };
     },
