@@ -61,7 +61,7 @@
         this.dialogVisible = false;
       },
       handleSuccess(response, file) {
-        this.listObj.push({uid: file.uid, name: file.name, url: `http://prqmm1g1p.bkt.clouddn.com/${file.name}`});
+        this.listObj.push({uid: file.uid, name: file.name, url: `http://img.cdn.freshth.top/${file.name}`});
         console.log("this.listObj", this.listObj)
       },
       handleRemove(file) {
