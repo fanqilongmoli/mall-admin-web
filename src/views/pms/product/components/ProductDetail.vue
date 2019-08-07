@@ -40,8 +40,8 @@
     price: null, // 商品现单价
     stock: 0, // 库存
     label: '', // 标签
-    canRefund: 0,
-    checkStock: '1', //校验库存
+    canRefund: "0",
+    checkStock: "1", //校验库存
     sort: 0, //排序
     status: null, //商品状态 1下架 2在售 3新品 4爆款
     subImages: [], //商品相册
@@ -73,6 +73,8 @@
           strings.pop();
           data.subImages = strings;
           this.productParam = data;
+          this.productParam.canRefund = data.canRefund.toString()
+          this.productParam.checkStock = data.checkStock.toString()
           console.log("this.productParam", this.productParam)
         });
       }
