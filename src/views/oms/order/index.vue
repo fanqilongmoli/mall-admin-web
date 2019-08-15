@@ -153,10 +153,10 @@
   </div>
 </template>
 <script>
-  import {fetchList, closeOrder, deleteOrder, delivery} from '../../../api/order'
+  import {delivery} from '../../../api/order'
   import {formatDate} from '@/utils/date';
   import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
-  import {orderList, orderDelete, orderClose} from '../../../api/order'
+  import {orderList, orderDelete, orderClose, closeOrder} from '../../../api/order'
 
   const defaultListQuery = {
     pageNo: 1,
@@ -310,7 +310,7 @@
       handleCloseOrder(index, row) {
         //this.closeOrder.dialogVisible = true;
         //this.closeOrder.orderIds = [row.id];
-        this.closeOrders([row.id])
+        this.closeOrders(row.id)
       },
       handleDeliveryOrder(index, row) {
         delivery([row.id]).then(response => {
@@ -413,7 +413,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          orderClose(ids).then(response => {
+          closeOrder(ids).then(response => {
             this.$message({
               message: '关闭成功！',
               type: 'success',

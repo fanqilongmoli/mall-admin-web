@@ -18,7 +18,7 @@
           <el-button size="mini">修改商品信息</el-button>
           <!--<el-button size="mini" @click="showUpdateMoneyDialog">修改费用信息</el-button>-->
           <!--<el-button size="mini" @click="showMessageDialog">发送站内信</el-button>-->
-          <el-button size="mini" @click="showCloseOrderDialog">关闭订单</el-button>
+          <el-button size="mini" @click="handleCloseOrder">关闭订单</el-button>
           <el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>
         </div>
         <!--代发货-->
@@ -568,16 +568,13 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          let params = new URLSearchParams();
-          params.append("ids", [this.closeInfo.id]);
-          params.append("note", this.closeInfo.note);
-          closeOrder(params).then(response => {
+          closeOrder(this.order.id).then(response => {
             this.closeDialogVisible = false;
             this.$message({
               type: 'success',
               message: '订单关闭成功!'
             });
-            getOrderDetail(this.id).then(response => {
+            orderDetail(this.id).then(response => {
               this.order = response.data;
             });
           });

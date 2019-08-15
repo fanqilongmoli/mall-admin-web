@@ -8,11 +8,14 @@ export function fetchList(params) {
   })
 }
 
-export function closeOrder(params) {
+/**
+ * 取消订单
+ * @param id
+ */
+export function closeOrder(id) {
   return request({
-    url: '/order/update/close',
-    method: 'post',
-    params: params
+    url: `/mall/admin/order/update/cancelOrder/${id}`,
+    method: 'get',
   })
 }
 

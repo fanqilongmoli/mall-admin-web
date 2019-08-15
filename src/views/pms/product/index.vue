@@ -269,7 +269,7 @@
     watch: {},
     filters: {
       verifyStatusFilter(value) {
-        return value === 1 ? "下架" : value === 2 ? "2在售" : value === 3 ? "新品" : "爆款";
+        return value === 1 ? "下架" : value === 2 ? "在售" : value === 3 ? "新品" : "爆款";
       }
     },
     methods: {
