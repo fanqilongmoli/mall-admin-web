@@ -102,6 +102,11 @@
             <p>{{scope.row.productSpecs.product.name}}</p>
           </template>
         </el-table-column>
+        <el-table-column label="商品规格名称" align="center">
+          <template slot-scope="scope">
+            <p>{{scope.row.productSpecs.specsName}}</p>
+          </template>
+        </el-table-column>
         <el-table-column label="单价" width="120" align="center">
           <template slot-scope="scope">
             <p>￥{{scope.row.productSpecs.price}}</p>
