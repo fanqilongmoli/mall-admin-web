@@ -47,6 +47,9 @@
       <el-form-item label="排序">
         <el-input-number v-model="value.sort"></el-input-number>
       </el-form-item>
+      <el-form-item label="爆款排序">
+        <el-input-number v-model="value.hotSort"></el-input-number>
+      </el-form-item>
       <el-form-item prop="status" label="商品状态">
         <el-select v-model="value.status" placeholder="请选择商品状态" clearable>
           <el-option

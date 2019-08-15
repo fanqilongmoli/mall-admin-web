@@ -43,6 +43,7 @@
     canRefund: "0",
     checkStock: "1", //校验库存
     sort: 0, //排序
+    hotSort: 0,// 爆款排序
     status: null, //商品状态 1下架 2在售 3新品 4爆款
     subImages: [], //商品相册
     detail: '', // 商品详情
