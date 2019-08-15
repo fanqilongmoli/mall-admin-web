@@ -149,6 +149,15 @@
           <el-col :span="6" class="table-cell">{{order.refundType|formatRefundType}}</el-col>
         </el-row>
       </div>
+      <div style="margin-top: 60px">
+        <svg-icon icon-class="marker" style="color: #606266"></svg-icon>
+        <span class="font-small">订单备注</span>
+      </div>
+      <div class="table-layout">
+        <el-row>
+          <el-col :span="24" class="table-cell">{{order.orderNote}}</el-col>
+        </el-row>
+      </div>
       <div style="margin-top: 20px">
         <svg-icon icon-class="marker" style="color: #606266"></svg-icon>
         <span class="font-small">操作信息</span>

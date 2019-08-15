@@ -57,7 +57,7 @@ export function updateMoneyInfo(data) {
 
 export function updateOrderNote(params) {
   return request({
-    url: '/order/update/note',
+    url: '/mall/admin/order/update/note',
     method: 'post',
     params: params
   })
