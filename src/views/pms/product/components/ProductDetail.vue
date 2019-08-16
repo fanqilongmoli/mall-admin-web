@@ -38,6 +38,7 @@
     costPrice: null, //商品成本价
     originalPrice: null, //商品原价
     price: null, // 商品现单价
+    priceUnit:null,//商品现单价单位
     stock: 0, // 库存
     label: '', // 标签
     canRefund: "0",
