@@ -103,13 +103,13 @@
             </el-button>
             <el-button
               size="mini"
-              @click="handleDeliveryOrder(scope.$index, scope.row)"
-              v-show="scope.row.status===1">订单发货
+              @click="handleCloseOrder(scope.$index, scope.row)"
+              v-show="scope.row.status===1">取消订单
             </el-button>
             <el-button
               size="mini"
               @click="handleViewLogistics(scope.$index, scope.row)"
-              v-show="scope.row.status===2||scope.row.status===5">订单跟踪
+              v-show="scope.row.status===2||scope.row.status===5">确认收货
             </el-button>
             <el-button
               size="mini"
@@ -153,7 +153,7 @@
   </div>
 </template>
 <script>
-  import {delivery} from '../../../api/order'
+  import {delivery, confirmReceiveGood} from '../../../api/order'
   import {formatDate} from '@/utils/date';
   import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
   import {orderList, orderDelete, orderClose, closeOrder} from '../../../api/order'
@@ -322,11 +322,17 @@
         })
       },
       handleViewLogistics(index, row) {
-        this.$message({
-          message: '暂时还不支持订单追踪',
-          type: 'warning',
-          duration: 1000
-        });
+        // 确认收货
+        confirmReceiveGood(row.id).then(
+          response => {
+            this.$message({
+              message: '确认收货成功',
+              type: 'success',
+              duration: 1000
+            });
+            this.getOrderList();
+          }
+        )
       },
       handleDeleteOrder(index, row) {
         let ids = [];
