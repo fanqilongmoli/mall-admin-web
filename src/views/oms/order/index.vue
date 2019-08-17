@@ -114,7 +114,7 @@
             <el-button
               size="mini"
               @click="handleViewLogistics(scope.$index, scope.row)"
-              v-show="scope.row.status===2||scope.row.status===5">确认收货
+              v-show="scope.row.status===2">确认收货
             </el-button>
             <el-button
               size="mini"
@@ -278,8 +278,6 @@
           return '待退差价';
         } else if (value === 5) {
           return '已完成';
-        } else if (value === 5) {
-          return '已关闭'
         } else if (value === 6) {
           return '已关闭'
         } else if (value === 7) {
