@@ -25,6 +25,7 @@
         <div class="operate-button-container" v-show="order.status===1">
           <!--<el-button size="mini" @click="showUpdateReceiverDialog">修改收货人信息</el-button>-->
           <!--<el-button size="mini" @click="showMessageDialog">发送站内信</el-button>-->
+          <el-button size="mini" @click="handleDeliveryOrder">订单发货</el-button>
           <el-button size="mini" @click="handleCloseOrder">取消订单</el-button>
           <!--<el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>-->
         </div>
@@ -310,7 +311,8 @@
     updateOrderNote,
     deleteOrder,
     orderUpdateReceiverInfo,
-    confirmReceiveGood
+    confirmReceiveGood,
+    delivery
   } from '../../../api/order';
   import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
   import {formatDate} from '@/utils/date';
@@ -413,11 +415,11 @@
           return '待退差价';
         } else if (value === 5) {
           return '已完成';
-        } else if (value === 5){
+        } else if (value === 5) {
           return '已关闭'
-        } else if (value === 6){
+        } else if (value === 6) {
           return '已关闭'
-        }else if (value === 7){
+        } else if (value === 7) {
           return '无效订单'
         } else {
           return '待付款';
@@ -516,7 +518,7 @@
         });
       },
       showUpdateMoneyDialog(data) {
-        console.log('data',data)
+        console.log('data', data)
         this.moneyDialogVisible = true;
         this.moneyInfo.orderId = this.order.id;
         this.moneyInfo.orderItemId = data.id;
@@ -580,6 +582,19 @@
           });
         });
       },
+      handleDeliveryOrder() {
+        delivery([this.order.id]).then(response => {
+          this.$message({
+            message: '发货成功',
+            type: 'success',
+            duration: 1000
+          });
+          orderDetail(this.id).then(response => {
+            this.order = response.data;
+          });
+        })
+      },
+
       showMarkOrderDialog() {
         this.markOrderDialogVisible = true;
         this.markInfo.id = this.id;
@@ -628,7 +643,7 @@
       showLogisticsDialog() {
         // 确认收货
         confirmReceiveGood(this.order.id).then(
-          response=>{
+          response => {
             this.$message({
               message: '确认收货成功',
               type: 'success',

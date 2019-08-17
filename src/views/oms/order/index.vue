@@ -108,6 +108,11 @@
             </el-button>
             <el-button
               size="mini"
+              @click="handleDeliveryOrder(scope.$index, scope.row)"
+              v-show="scope.row.status===1">订单发货
+            </el-button>
+            <el-button
+              size="mini"
               @click="handleViewLogistics(scope.$index, scope.row)"
               v-show="scope.row.status===2||scope.row.status===5">确认收货
             </el-button>
@@ -319,6 +324,7 @@
             type: 'success',
             duration: 1000
           });
+          this.getOrderList();
         })
       },
       handleViewLogistics(index, row) {
