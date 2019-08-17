@@ -25,7 +25,7 @@
         <div class="operate-button-container" v-show="order.status===1">
           <!--<el-button size="mini" @click="showUpdateReceiverDialog">修改收货人信息</el-button>-->
           <!--<el-button size="mini" @click="showMessageDialog">发送站内信</el-button>-->
-          <el-button size="mini">取消订单</el-button>
+          <el-button size="mini" @click="handleCloseOrder">取消订单</el-button>
           <!--<el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>-->
         </div>
         <div class="operate-button-container" v-show="order.status===2||order.status===5">

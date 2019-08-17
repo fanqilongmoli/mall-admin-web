@@ -26,6 +26,9 @@
       <el-form-item label="商品单价：" prop="price">
         <el-input v-model="value.price" type="number"></el-input>
       </el-form-item>
+      <el-form-item label="单价单位：" prop="priceUnit">
+      <el-input v-model="value.priceUnit"></el-input>
+    </el-form-item>
       <el-form-item label="销量：" prop="price">
         <el-input v-model="value.salesVolume" type="number"></el-input>
       </el-form-item>
@@ -118,7 +121,7 @@
             {required: true, message: '请输入商品名称', trigger: 'blur'},
             {min: 2, max: 140, message: '长度在 2 到 140 个字符', trigger: 'blur'}
           ],
-          subtitle: [{required: true, message: '请输入商品副标题', trigger: 'blur'}],
+          subtitle: [{required: false, message: '请输入商品副标题', trigger: 'blur'}],
           categoryId: [{required: true, message: '请选择商品分类', trigger: 'blur'}],
           specs: [{required: true, message: '请选择商品规格', trigger: 'blur'}],
           description: [{required: true, message: '请输入商品介绍', trigger: 'blur'}],
