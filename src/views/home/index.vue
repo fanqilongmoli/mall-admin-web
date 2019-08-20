@@ -2,19 +2,58 @@
   <div class="app-container">
     <div class="address-layout">
       <el-row :gutter="20">
-        <el-col :span="12">
+        <el-col :span="24">
           <div class="out-border">
-            <div class="layout-title">GitHub地址</div>
-            <div style="padding: 20px;font-size: 18px" class="color-main">
-              <a href="https://github.com/macrozheng/mall">https://github.com/macrozheng/mall</a>
-            </div>
-          </div>
-        </el-col>
-        <el-col :span="12">
-          <div class="out-border">
-            <div class="layout-title">码云地址</div>
-            <div style="padding: 20px;font-size: 18px" class="color-main">
-              <a href="https://gitee.com/macrozheng/mall">https://gitee.com/macrozheng/mall</a>
+            <div class="layout-title">拣货统计</div>
+            <el-form :inline="true" :model="listQuery" size="small" label-width="100px" style="padding: 16px 0">
+              <el-form-item label="提交时间：">
+                <el-date-picker
+                  v-model="listQuery.createTime"
+                  type="datetimerange"
+                  range-separator="至"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期">
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item label="订单状态：">
+                <el-select v-model="listQuery.status" class="input-width" placeholder="全部" clearable>
+                  <el-option v-for="item in statusOptions"
+                             :key="item.value"
+                             :label="item.label"
+                             :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="searchGoods">查询</el-button>
+              </el-form-item>
+            </el-form>
+
+            <div style="padding: 16px">
+              <el-tabs v-model="activeName">
+                <el-tab-pane v-for="(item,index) in pickingGoods" :label="item.name" :name="item.name" :key="index">
+                  <el-table :data="item.list">
+                    <el-table-column
+                      prop="specsName"
+                      label="规格名称"
+                      width="280">
+                    </el-table-column>
+                    <el-table-column
+                      prop="number"
+                      label="数量"
+                      width="180">
+                    </el-table-column>
+                    <el-table-column label="操作" width="200" align="center">
+                      <template slot-scope="scope">
+                        <el-button
+                          size="mini">等待扩展
+                        </el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </el-tab-pane>
+              </el-tabs>
             </div>
           </div>
         </el-col>
@@ -234,8 +273,10 @@
 
 <script>
   import {str2Date} from '@/utils/date';
+  import {pickingGoods} from '../../api/home';
+
   const DATA_FROM_BACKEND = {
-    columns: ['date', 'orderCount','orderAmount'],
+    columns: ['date', 'orderCount', 'orderAmount'],
     rows: [
       {date: '2018-11-01', orderCount: 10, orderAmount: 1093},
       {date: '2018-11-02', orderCount: 20, orderAmount: 2230},
@@ -286,52 +327,102 @@
         orderCountDate: '',
         chartSettings: {
           xAxisType: 'time',
-          area:true,
-          axisSite: { right: ['orderAmount']},
-        labelMap: {'orderCount': '订单数量', 'orderAmount': '订单金额'}},
+          area: true,
+          axisSite: {right: ['orderAmount']},
+          labelMap: {'orderCount': '订单数量', 'orderAmount': '订单金额'}
+        },
         chartData: {
           columns: [],
           rows: []
         },
         loading: false,
-        dataEmpty: false
+        dataEmpty: false,
+        statusOptions: [
+          {
+            label: '待付款',
+            value: 0
+          },
+          {
+            label: '待发货',
+            value: 1
+          },
+          {
+            label: '已发货',
+            value: 2
+          },
+          {
+            label: '待补差价',
+            value: 3
+          },
+          {
+            label: '待退差价',
+            value: 4
+          },
+          {
+            label: '已完成',
+            value: 5
+          },
+          {
+            label: '已关闭',
+            value: 6
+          },
+          {
+            label: '无效订单',
+            value: 7
+          }
+        ],
+        listQuery: {
+          status: null,
+          createTime: null,
+        },
+        pickingGoods: [],
+        activeName: '',
       }
     },
-    created(){
+    created() {
       this.initOrderCountDate();
       this.getData();
     },
-    methods:{
-      handleDateChange(){
+    methods: {
+      handleDateChange() {
         this.getData();
       },
-      initOrderCountDate(){
+      initOrderCountDate() {
         let start = new Date();
         start.setFullYear(2018);
         start.setMonth(10);
         start.setDate(1);
         const end = new Date();
         end.setTime(start.getTime() + 1000 * 60 * 60 * 24 * 7);
-        this.orderCountDate=[start,end];
+        this.orderCountDate = [start, end];
       },
-      getData(){
+      getData() {
         setTimeout(() => {
           this.chartData = {
-            columns: ['date', 'orderCount','orderAmount'],
+            columns: ['date', 'orderCount', 'orderAmount'],
             rows: []
           };
-          for(let i=0;i<DATA_FROM_BACKEND.rows.length;i++){
-            let item=DATA_FROM_BACKEND.rows[i];
-            let currDate=str2Date(item.date);
-            let start=this.orderCountDate[0];
-            let end=this.orderCountDate[1];
-            if(currDate.getTime()>=start.getTime()&&currDate.getTime()<=end.getTime()){
+          for (let i = 0; i < DATA_FROM_BACKEND.rows.length; i++) {
+            let item = DATA_FROM_BACKEND.rows[i];
+            let currDate = str2Date(item.date);
+            let start = this.orderCountDate[0];
+            let end = this.orderCountDate[1];
+            if (currDate.getTime() >= start.getTime() && currDate.getTime() <= end.getTime()) {
               this.chartData.rows.push(item);
             }
           }
           this.dataEmpty = false;
           this.loading = false
         }, 1000)
+      },
+      // 拣货统计
+      searchGoods() {
+        pickingGoods(this.listQuery).then(response => {
+          this.pickingGoods = response.data;
+          if (response.data.length > 0) {
+            this.activeName = response.data[0].name;
+          }
+        })
       }
     }
   }
