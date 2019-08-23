@@ -29,7 +29,6 @@
                 <el-button type="primary" @click="searchGoods">查询</el-button>
               </el-form-item>
             </el-form>
-
             <div style="padding: 16px">
               <el-tabs v-model="activeName">
                 <el-tab-pane v-for="(item,index) in pickingGoods" :label="item.name" :name="item.name" :key="index">
