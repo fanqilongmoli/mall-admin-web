@@ -118,14 +118,20 @@
             {{scope.row.quantity}}
           </template>
         </el-table-column>
+        <el-table-column label="实际称重" width="120" align="center">
+          <template slot-scope="scope">
+            {{scope.row.actualWeighing}}斤
+          </template>
+        </el-table-column>
         <el-table-column label="小计" width="120" align="center">
           <template slot-scope="scope">
             ￥{{scope.row.totalPayment}}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="120" align="center">
+        <el-table-column label="操作" width="240" align="center">
           <template slot-scope="scope">
             <el-button v-show="order.status === 1" @click="showUpdateMoneyDialog(scope.row)">修改差价</el-button>
+            <el-button v-show="order.status === 1" @click="showUpdateWeighingDialog(scope.row)">修改称重</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -231,6 +237,24 @@
       <el-button type="primary" @click="handleUpdateReceiverInfo">确 定</el-button>
       </span>
     </el-dialog>
+    <!--修改订单重量-->
+    <el-dialog title="修改商品重量(单位:斤)"
+               :visible.sync="weighingDialogVisible"
+               width="40%">
+      <div class="table-layout">
+        <el-row>
+          <el-col :span="24" class="table-cell">
+            <el-input-number v-model="moneyInfo.actualWeighing" size="mini"
+                             controls-position="right" :precision="2" :step="0.01">
+            </el-input-number>
+          </el-col>
+        </el-row>
+      </div>
+      <span slot="footer" class="dialog-footer">
+      <el-button @click="moneyDialogVisible = false">取 消</el-button>
+      <el-button type="primary" @click="handleUpdateWeighingInfo">确 定</el-button>
+      </span>
+    </el-dialog>
     <!--修改订单差价-->
     <el-dialog title="修改订单差价"
                :visible.sync="moneyDialogVisible"
@@ -333,7 +357,8 @@
         receiverDialogVisible: false,
         receiverInfo: Object.assign({}, defaultReceiverInfo),
         moneyDialogVisible: false,
-        moneyInfo: {orderId: null, orderItemId: null, totalActualPayment: 0},
+        weighingDialogVisible:false,
+        moneyInfo: {orderId: null, orderItemId: null, totalActualPayment: 0,actualWeighing:0},
         messageDialogVisible: false,
         message: {title: null, content: null},
         closeDialogVisible: false,
@@ -517,19 +542,45 @@
           });
         });
       },
+      showUpdateWeighingDialog(data) {
+        console.log('data', data)
+        this.weighingDialogVisible = true;
+        this.moneyInfo.orderId = this.order.id;
+        this.moneyInfo.orderItemId = data.id;
+      },
+      handleUpdateWeighingInfo() {
+        this.$confirm('是否要修改商品重量?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          orderUpdateReceiverInfo({orderId: this.moneyInfo.orderId, orderItemId: this.moneyInfo.orderItemId,actualWeighing:this.moneyInfo.actualWeighing},).then(response => {
+            this.weighingDialogVisible = false;
+            this.$message({
+              type: 'success',
+              message: '修改成功!'
+            });
+            orderDetail(this.id).then(response => {
+              this.order = response.data;
+            });
+          });
+        });
+      },
+
       showUpdateMoneyDialog(data) {
         console.log('data', data)
         this.moneyDialogVisible = true;
         this.moneyInfo.orderId = this.order.id;
         this.moneyInfo.orderItemId = data.id;
       },
+
       handleUpdateMoneyInfo() {
         this.$confirm('是否要修改费用信息?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          orderUpdateReceiverInfo(this.moneyInfo).then(response => {
+          orderUpdateReceiverInfo({orderId: this.moneyInfo.orderId, orderItemId: this.moneyInfo.orderItemId,totalActualPayment:this.moneyInfo.totalActualPayment}).then(response => {
             this.moneyDialogVisible = false;
             this.$message({
               type: 'success',
