@@ -309,6 +309,17 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '',
+    component: Layout,
+    redirect: '/user',
+    children: [{
+      path: 'user',
+      name: 'user',
+      component: () => import('@/views/user/index'),
+      meta: {title: '用户管理', icon: 'user'}
+    }]
+  },
   {path: '*', redirect: '/404', hidden: true}
 ]
 
