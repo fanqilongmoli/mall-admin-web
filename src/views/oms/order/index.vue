@@ -122,6 +122,11 @@
               @click="handleDeleteOrder(scope.$index, scope.row)"
               v-show="scope.row.status===6">删除订单
             </el-button>
+            <el-button
+              size="mini"
+              @click="handleNotifyPayOrder(scope.$index, scope.row)"
+              v-show="scope.row.status===3">提醒补差价
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -161,7 +166,7 @@
   import {delivery, confirmReceiveGood} from '../../../api/order'
   import {formatDate} from '@/utils/date';
   import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
-  import {orderList, orderDelete, orderClose, closeOrder} from '../../../api/order'
+  import {orderList, orderDelete, orderClose, closeOrder,notifyPayOffsetMoney} from '../../../api/order'
 
   const defaultListQuery = {
     pageNo: 1,
@@ -343,6 +348,17 @@
         ids.push(row.id);
         this.deleteOrder(ids);
       },
+      handleNotifyPayOrder(index, row){
+        notifyPayOffsetMoney(row.id).then(response => {
+          this.$message({
+            message: '提醒发送成功',
+            type: 'success',
+            duration: 1000
+          });
+          //this.getOrderList();
+        });
+      },
+
       handleBatchOperate() {
         if (this.multipleSelection == null || this.multipleSelection.length < 1) {
           this.$message({
