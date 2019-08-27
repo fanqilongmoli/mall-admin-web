@@ -31,15 +31,26 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="danger"
-              @click="sendCoupon(scope.$index, scope.row)">发放代金券
-            </el-button>
-            <el-button
-              size="mini"
-              @click="updatePhone(scope.$index, scope.row)">修改电话号码
-            </el-button>
+            <div>
+              <el-button
+                size="mini"
+                type="danger"
+                @click="sendCoupon(scope.$index, scope.row)">发放代金券
+              </el-button>
+            </div>
+            <div>
+              <el-button
+                size="mini"
+                @click="updatePhone(scope.$index, scope.row)">修改电话号码
+              </el-button>
+            </div>
+            <div>
+              <el-button
+                size="mini"
+                @click="deleteUser(scope.$index, scope.row)">删除
+              </el-button>
+            </div>
+
           </template>
         </el-table-column>
       </el-table>
@@ -90,7 +101,7 @@
 </template>
 
 <script>
-  import {list, sendCoupon, updatePhone} from "../../api/user"
+  import {list, sendCoupon, updatePhone, deleteUser} from "../../api/user"
   import {random3} from "../../utils/math"
 
   const defaultListQuery = {
@@ -214,6 +225,13 @@
           this.$message.success("修改电话号码成功")
           this.getUserList();
         })
+      },
+      deleteUser(index, val) {
+        deleteUser(val.id).then(response => {
+            this.$message.success("删除用户成功")
+            this.getUserList();
+          }
+        )
       }
     }
   }

@@ -34,3 +34,14 @@ export function updatePhone(data) {
     data
   })
 }
+
+/**
+ * 删除用户
+ * @param id
+ */
+export function deleteUser(id) {
+  return request({
+    url: `mall/admin/user/${id}`,
+    method: 'delete'
+  })
+}
