@@ -179,4 +179,9 @@ export function delivery(ids) {
   })
 }
 
-
+export function notifyPayOffsetMoney(id) {
+  return request({
+    url: `/mall/admin/order/notifyPayOffsetMoney/${id}`,
+    method: 'get'
+  })
+}
