@@ -52,25 +52,25 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <div>
+            <p>
               <el-button
                 size="mini"
                 type="danger"
                 @click="sendCoupon(scope.$index, scope.row)">发放代金券
               </el-button>
-            </div>
-            <div>
+            </p>
+            <p>
               <el-button
                 size="mini"
                 @click="updatePhone(scope.$index, scope.row)">修改电话号码
               </el-button>
-            </div>
-            <div>
+            </p>
+            <p>
               <el-button
                 size="mini"
                 @click="deleteUser(scope.$index, scope.row)">删除
               </el-button>
-            </div>
+            </p>
 
           </template>
         </el-table-column>
@@ -250,11 +250,18 @@
         })
       },
       deleteUser(index, val) {
-        deleteUser(val.id).then(response => {
-            this.$message.success("删除用户成功")
-            this.getUserList();
-          }
-        )
+        this.$confirm('是否要进行该删除操作?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          deleteUser(val.id).then(response => {
+              this.$message.success("删除用户成功")
+              this.getUserList();
+            }
+          )
+        })
+
       },
       handleSearch() {
         this.listQuery.pageNo = 1;

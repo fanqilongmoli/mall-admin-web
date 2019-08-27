@@ -91,42 +91,58 @@
         </el-table-column>
         <el-table-column label="操作" width="200" align="center">
           <template slot-scope="scope">
-            <el-button
-              size="mini"
-              @click="handleViewOrder(scope.$index, scope.row)"
-            >查看订单
-            </el-button>
-            <el-button
-              size="mini"
-              @click="handleCloseOrder(scope.$index, scope.row)"
-              v-show="scope.row.status===0">关闭订单
-            </el-button>
-            <el-button
-              size="mini"
-              @click="handleCloseOrder(scope.$index, scope.row)"
-              v-show="scope.row.status===1">取消订单
-            </el-button>
-            <el-button
-              size="mini"
-              @click="handleDeliveryOrder(scope.$index, scope.row)"
-              v-show="scope.row.status===1">订单发货
-            </el-button>
-            <el-button
-              size="mini"
-              @click="handleViewLogistics(scope.$index, scope.row)"
-              v-show="scope.row.status===2">确认收货
-            </el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleDeleteOrder(scope.$index, scope.row)"
-              v-show="scope.row.status===6">删除订单
-            </el-button>
-            <el-button
-              size="mini"
-              @click="handleNotifyPayOrder(scope.$index, scope.row)"
-              v-show="scope.row.status===3">提醒补差价
-            </el-button>
+            <p>
+              <el-button
+                size="mini"
+                @click="handleViewOrder(scope.$index, scope.row)"
+              >查看订单
+              </el-button>
+            </p>
+
+            <p>
+              <el-button
+                size="mini"
+                @click="handleCloseOrder(scope.$index, scope.row)"
+                v-show="scope.row.status===0">关闭订单
+              </el-button>
+            </p>
+            <p>
+              <el-button
+                size="mini"
+                @click="handleCloseOrder(scope.$index, scope.row)"
+                v-show="scope.row.status===1">取消订单
+              </el-button>
+            </p>
+
+            <p>
+              <el-button
+                size="mini"
+                @click="handleDeliveryOrder(scope.$index, scope.row)"
+                v-show="scope.row.status===1">订单发货
+              </el-button>
+            </p>
+            <p>
+              <el-button
+                size="mini"
+                @click="handleViewLogistics(scope.$index, scope.row)"
+                v-show="scope.row.status===2">确认收货
+              </el-button>
+            </p>
+            <p>
+              <el-button
+                size="mini"
+                type="danger"
+                @click="handleDeleteOrder(scope.$index, scope.row)"
+                v-show="scope.row.status===6">删除订单
+              </el-button>
+            </p>
+            <p>
+              <el-button
+                size="mini"
+                @click="handleNotifyPayOrder(scope.$index, scope.row)"
+                v-show="scope.row.status===3">提醒补差价
+              </el-button>
+            </p>
           </template>
         </el-table-column>
       </el-table>
@@ -166,7 +182,7 @@
   import {delivery, confirmReceiveGood} from '../../../api/order'
   import {formatDate} from '@/utils/date';
   import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
-  import {orderList, orderDelete, orderClose, closeOrder,notifyPayOffsetMoney} from '../../../api/order'
+  import {orderList, orderDelete, orderClose, closeOrder, notifyPayOffsetMoney} from '../../../api/order'
 
   const defaultListQuery = {
     pageNo: 1,
@@ -348,7 +364,7 @@
         ids.push(row.id);
         this.deleteOrder(ids);
       },
-      handleNotifyPayOrder(index, row){
+      handleNotifyPayOrder(index, row) {
         notifyPayOffsetMoney(row.id).then(response => {
           this.$message({
             message: '提醒发送成功',
