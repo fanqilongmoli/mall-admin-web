@@ -7,6 +7,8 @@ export function list(data) {
     data: {
       pageNo: data.pageNo - 1,
       pageSize: data.pageSize,
+      phone: data.phone,
+      nickName: data.nickName
     }
   })
 }

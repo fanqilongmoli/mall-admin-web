@@ -3,7 +3,28 @@
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets"></i>
       <span>用户管理</span>
-      <!--<el-button size="mini" class="btn-add" @click="handleAdd()">添加广告</el-button>-->
+
+      <div style="margin-top: 15px">
+        <el-form :inline="true" :model="listQuery" size="small" label-width="140px">
+          <el-form-item label="搜索电话号码：">
+            <el-input style="width: 203px" v-model="listQuery.phone" placeholder="电话号码"></el-input>
+          </el-form-item>
+          <el-form-item label="搜索昵称：">
+            <el-input style="width: 203px" v-model="listQuery.nickName" placeholder="昵称"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleSearch">搜索</el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              style="float: right;margin-right: 15px"
+              @click="handleResetSearch">
+              重置
+            </el-button>
+          </el-form-item>
+        </el-form>
+
+      </div>
     </el-card>
     <div class="table-container">
       <el-table ref="orderTable"
@@ -106,7 +127,9 @@
 
   const defaultListQuery = {
     pageNo: 1,
-    pageSize: 10
+    pageSize: 10,
+    phone: "",
+    nickName: "",
   };
 
   export default {
@@ -232,6 +255,15 @@
             this.getUserList();
           }
         )
+      },
+      handleSearch() {
+        this.listQuery.pageNo = 1;
+        this.getUserList();
+      },
+      handleResetSearch() {
+        this.listQuery.phone = "";
+        this.listQuery.nickName = "";
+        this.getUserList();
       }
     }
   }
