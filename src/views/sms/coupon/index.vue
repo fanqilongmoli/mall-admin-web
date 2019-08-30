@@ -182,6 +182,7 @@
       },
       formatStatus(endTime){
         let now = new Date().getTime();
+        endTime = new Date(endTime).getTime();
         if(endTime>now){
           return '未过期'
         }else{
@@ -236,9 +237,11 @@
       getList(){
         this.listLoading=true;
         fetchList(this.listQuery).then(response=>{
+          console.log(response);
+          let {content,totalElements} = response.data;
           this.listLoading = false;
-          this.list = response.data.list;
-          this.total = response.data.total;
+          this.list = content;
+          this.total = totalElements;
         });
       }
     }

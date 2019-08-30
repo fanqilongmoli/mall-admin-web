@@ -3,7 +3,7 @@ export function fetchList(params) {
   return request({
     url:'/mall/admin/coupon/list',
     method:'get',
-    params:params
+    params:{...params,pageNum:params.pageNum-1}
   })
 }
 

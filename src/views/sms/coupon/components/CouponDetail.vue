@@ -48,9 +48,9 @@
         </el-input>
       </el-form-item>
       <el-form-item label="有效期：">
-        <el-date-picker type="date" placeholder="选择日期" v-model="coupon.startTime" style="width: 150px"></el-date-picker>
+        <el-date-picker type="date" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期" v-model="coupon.startTime" style="width: 150px"></el-date-picker>
         <span style="margin-left: 20px;margin-right: 20px">至</span>
-        <el-date-picker type="date" placeholder="选择日期" v-model="coupon.endTime" style="width: 150px"></el-date-picker>
+        <el-date-picker type="date" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期" v-model="coupon.endTime" style="width: 150px"></el-date-picker>
       </el-form-item>
       <el-form-item label="可使用商品：">
         <el-radio-group v-model="coupon.useType">
@@ -287,7 +287,7 @@
             this.selectProductOptions = [];
             for(let i=0;i<productList.length;i++){
               let item = productList[i];
-              this.selectProductOptions.push({productId:item.id,productName:item.name,productSn:item.productSn});
+              this.selectProductOptions.push({productId:item.id,productName:item.name,productSn:item.id});
             }
           });
         } else {
