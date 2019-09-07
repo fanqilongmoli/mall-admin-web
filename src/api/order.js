@@ -185,3 +185,15 @@ export function notifyPayOffsetMoney(id) {
     method: 'get'
   })
 }
+
+/**
+ * 订单缺货通知
+ * @param data
+ */
+export function shortage(data) {
+  return request({
+    url: `/mall/admin/order/update/shortage`,
+    method: 'post',
+    data: data
+  })
+}

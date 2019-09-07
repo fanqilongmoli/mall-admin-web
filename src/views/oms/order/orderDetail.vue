@@ -130,8 +130,15 @@
         </el-table-column>
         <el-table-column label="操作" width="240" align="center">
           <template slot-scope="scope">
-            <el-button v-show="order.status === 1" @click="showUpdateMoneyDialog(scope.row)">修改差价</el-button>
-            <el-button v-show="order.status === 1" @click="showUpdateWeighingDialog(scope.row)">修改称重</el-button>
+            <p>
+              <el-button v-show="order.status === 1" @click="showUpdateMoneyDialog(scope.row)">修改差价</el-button>
+            </p>
+            <p>
+              <el-button v-show="order.status === 1" @click="showUpdateWeighingDialog(scope.row)">修改称重</el-button>
+            </p>
+            <p>
+              <el-button v-show="order.status === 1" @click="showShortage(scope.row)">缺货通知</el-button>
+            </p>
           </template>
         </el-table-column>
       </el-table>
@@ -327,384 +334,412 @@
   </div>
 </template>
 <script>
-  import {
-    orderDetail,
-    updateReceiverInfo,
-    updateMoneyInfo,
-    closeOrder,
-    updateOrderNote,
-    deleteOrder,
-    orderUpdateReceiverInfo,
-    confirmReceiveGood,
-    delivery
-  } from '../../../api/order';
-  import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
-  import {formatDate} from '@/utils/date';
-  import VDistpicker from 'v-distpicker';
+    import {
+        orderDetail,
+        updateReceiverInfo,
+        updateMoneyInfo,
+        closeOrder,
+        updateOrderNote,
+        deleteOrder,
+        orderUpdateReceiverInfo,
+        confirmReceiveGood,
+        delivery,
+        shortage
+    } from '../../../api/order';
+    import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
+    import {formatDate} from '@/utils/date';
+    import VDistpicker from 'v-distpicker';
 
-  const defaultReceiverInfo = {
-    orderId: null,
-    orderItemId: null,
-    totalActualPayment: null
-  };
-  export default {
-    name: 'orderDetail',
-    components: {VDistpicker, LogisticsDialog},
-    data() {
-      return {
-        id: null,
-        order: {},
-        receiverDialogVisible: false,
-        receiverInfo: Object.assign({}, defaultReceiverInfo),
-        moneyDialogVisible: false,
-        weighingDialogVisible:false,
-        moneyInfo: {orderId: null, orderItemId: null, totalActualPayment: 0,actualWeighing:0},
-        messageDialogVisible: false,
-        message: {title: null, content: null},
-        closeDialogVisible: false,
-        closeInfo: {note: null, id: null},
-        markOrderDialogVisible: false,
-        markInfo: {note: null},
-        logisticsDialogVisible: false
-      }
-    },
-    created() {
-      this.id = this.list = this.$route.query.id;
-      orderDetail(this.id).then(response => {
-        console.log('orderDetail', response)
-        this.order = response.data;
-      });
-    },
-    filters: {
-      formatNull(value) {
-        if (value === undefined || value === null || value === '') {
-          return '暂无';
-        } else {
-          return value;
-        }
-      },
-      formatLongText(value) {
-        if (value === undefined || value === null || value === '') {
-          return '暂无';
-        } else if (value.length > 8) {
-          return value.substr(0, 8) + '...';
-        } else {
-          return value;
-        }
-      },
-      formatRefundType(value) {
-        if (value === 0) {
-          return '退差价'
-        } else {
-          return '补差价'
-        }
-      },
-      formatPayType(value) {
-        if (value === 1) {
-          return '在线支付';
-        }
-      },
-      formatSourceType(value) {
-        return '小程序';
-        if (value === 1) {
-          return 'APP订单';
-        } else {
-          return 'PC订单';
-        }
-      },
-      formatOrderType(value) {
-        if (value === 1) {
-          return '秒杀订单';
-        } else {
-          return '正常订单';
-        }
-      },
-      formatAddress(order) {
-        let str = order.receiverProvince;
-        if (order.receiverCity != null) {
-          str += "  " + order.receiverCity;
-        }
-        str += "  " + order.receiverDistrict;
-        str += "  " + order.receiverAddress;
-        return str;
-      },
-      formatStatus(value) {
-        // 订单状态：0->待付款；1->待发货；2->已发货；3->待补差价 4->待退差价 5->已完成；6->已关闭；7->无效订单
-        if (value === 1) {
-          return '待发货';
-        } else if (value === 2) {
-          return '已发货';
-        } else if (value === 3) {
-          return '待补差价';
-        } else if (value === 4) {
-          return '待退差价';
-        } else if (value === 5) {
-          return '已完成';
-        } else if (value === 5) {
-          return '已关闭'
-        } else if (value === 6) {
-          return '已关闭'
-        } else if (value === 7) {
-          return '无效订单'
-        } else {
-          return '待付款';
-        }
-      },
-      formatPayStatus(value) {
-        if (value === 0) {
-          return '未支付';
-        } else if (value === 4) {
-          return '已退款';
-        } else {
-          return '已支付';
-        }
-      },
-      formatDeliverStatus(value) {
-        if (value === 0 || value === 1) {
-          return '未发货';
-        } else {
-          return '已发货';
-        }
-      },
-      formatProductAttr(value) {
-        if (value == null) {
-          return '';
-        } else {
-          let attr = JSON.parse(value);
-          let result = '';
-          for (let i = 0; i < attr.length; i++) {
-            result += attr[i].key;
-            result += ":";
-            result += attr[i].value;
-            result += ";";
-          }
-          return result;
-        }
-      }
-    },
-    methods: {
-      onSelectRegion(data) {
-        this.receiverInfo.receiverProvince = data.province.value;
-        this.receiverInfo.receiverCity = data.city.value;
-        this.receiverInfo.receiverRegion = data.area.value;
-      },
-      formatTime(time) {
-        if (time == null || time === '') {
-          return '';
-        }
-        let date = new Date(time);
-        return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
-      },
-      formatStepStatus(value) {
-        if (value === 1) {
-          //待发货
-          return 2;
-        } else if (value === 2) {
-          //已发货
-          return 3;
-        } else if (value === 5) {
-          //已完成
-          return 4;
-        } else {
-          //待付款、已关闭、无限订单
-          return 1;
-        }
-      },
-      showUpdateReceiverDialog() {
-        this.receiverDialogVisible = true;
-        this.receiverInfo = {
-          orderId: this.order.id,
-          receiverName: this.order.receiverName,
-          receiverPhone: this.order.receiverPhone,
-          receiverPostCode: this.order.receiverPostCode,
-          receiverDetailAddress: this.order.receiverDetailAddress,
-          receiverProvince: this.order.receiverProvince,
-          receiverCity: this.order.receiverCity,
-          receiverRegion: this.order.receiverRegion,
-          status: this.order.status
-        }
-      },
-      handleUpdateReceiverInfo() {
-        this.$confirm('是否要修改收货信息?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          orderUpdateReceiverInfo(this.receiverInfo).then(response => {
-            this.receiverDialogVisible = false;
-            this.$message({
-              type: 'success',
-              message: '修改成功!'
-            });
+    const defaultReceiverInfo = {
+        orderId: null,
+        orderItemId: null,
+        totalActualPayment: null
+    };
+    export default {
+        name: 'orderDetail',
+        components: {VDistpicker, LogisticsDialog},
+        data() {
+            return {
+                id: null,
+                order: {},
+                receiverDialogVisible: false,
+                receiverInfo: Object.assign({}, defaultReceiverInfo),
+                moneyDialogVisible: false,
+                weighingDialogVisible: false,
+                moneyInfo: {orderId: null, orderItemId: null, totalActualPayment: 0, actualWeighing: 0},
+                messageDialogVisible: false,
+                message: {title: null, content: null},
+                closeDialogVisible: false,
+                closeInfo: {note: null, id: null},
+                markOrderDialogVisible: false,
+                markInfo: {note: null},
+                logisticsDialogVisible: false
+            }
+        },
+        created() {
+            this.id = this.list = this.$route.query.id;
             orderDetail(this.id).then(response => {
-              this.order = response.data;
+                console.log('orderDetail', response)
+                this.order = response.data;
             });
-          });
-        });
-      },
-      showUpdateWeighingDialog(data) {
-        console.log('data', data)
-        this.weighingDialogVisible = true;
-        this.moneyInfo.orderId = this.order.id;
-        this.moneyInfo.orderItemId = data.id;
-      },
-      handleUpdateWeighingInfo() {
-        this.$confirm('是否要修改商品重量?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          orderUpdateReceiverInfo({orderId: this.moneyInfo.orderId, orderItemId: this.moneyInfo.orderItemId,actualWeighing:this.moneyInfo.actualWeighing},).then(response => {
-            this.weighingDialogVisible = false;
-            this.$message({
-              type: 'success',
-              message: '修改成功!'
-            });
-            orderDetail(this.id).then(response => {
-              this.order = response.data;
-            });
-          });
-        });
-      },
+        },
+        filters: {
+            formatNull(value) {
+                if (value === undefined || value === null || value === '') {
+                    return '暂无';
+                } else {
+                    return value;
+                }
+            },
+            formatLongText(value) {
+                if (value === undefined || value === null || value === '') {
+                    return '暂无';
+                } else if (value.length > 8) {
+                    return value.substr(0, 8) + '...';
+                } else {
+                    return value;
+                }
+            },
+            formatRefundType(value) {
+                if (value === 0) {
+                    return '退差价'
+                } else {
+                    return '补差价'
+                }
+            },
+            formatPayType(value) {
+                if (value === 1) {
+                    return '在线支付';
+                }
+            },
+            formatSourceType(value) {
+                return '小程序';
+                if (value === 1) {
+                    return 'APP订单';
+                } else {
+                    return 'PC订单';
+                }
+            },
+            formatOrderType(value) {
+                if (value === 1) {
+                    return '秒杀订单';
+                } else {
+                    return '正常订单';
+                }
+            },
+            formatAddress(order) {
+                let str = order.receiverProvince;
+                if (order.receiverCity != null) {
+                    str += "  " + order.receiverCity;
+                }
+                str += "  " + order.receiverDistrict;
+                str += "  " + order.receiverAddress;
+                return str;
+            },
+            formatStatus(value) {
+                // 订单状态：0->待付款；1->待发货；2->已发货；3->待补差价 4->待退差价 5->已完成；6->已关闭；7->无效订单
+                if (value === 1) {
+                    return '待发货';
+                } else if (value === 2) {
+                    return '已发货';
+                } else if (value === 3) {
+                    return '待补差价';
+                } else if (value === 4) {
+                    return '待退差价';
+                } else if (value === 5) {
+                    return '已完成';
+                } else if (value === 5) {
+                    return '已关闭'
+                } else if (value === 6) {
+                    return '已关闭'
+                } else if (value === 7) {
+                    return '无效订单'
+                } else {
+                    return '待付款';
+                }
+            },
+            formatPayStatus(value) {
+                if (value === 0) {
+                    return '未支付';
+                } else if (value === 4) {
+                    return '已退款';
+                } else {
+                    return '已支付';
+                }
+            },
+            formatDeliverStatus(value) {
+                if (value === 0 || value === 1) {
+                    return '未发货';
+                } else {
+                    return '已发货';
+                }
+            },
+            formatProductAttr(value) {
+                if (value == null) {
+                    return '';
+                } else {
+                    let attr = JSON.parse(value);
+                    let result = '';
+                    for (let i = 0; i < attr.length; i++) {
+                        result += attr[i].key;
+                        result += ":";
+                        result += attr[i].value;
+                        result += ";";
+                    }
+                    return result;
+                }
+            }
+        },
+        methods: {
+            onSelectRegion(data) {
+                this.receiverInfo.receiverProvince = data.province.value;
+                this.receiverInfo.receiverCity = data.city.value;
+                this.receiverInfo.receiverRegion = data.area.value;
+            },
+            formatTime(time) {
+                if (time == null || time === '') {
+                    return '';
+                }
+                let date = new Date(time);
+                return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
+            },
+            formatStepStatus(value) {
+                if (value === 1) {
+                    //待发货
+                    return 2;
+                } else if (value === 2) {
+                    //已发货
+                    return 3;
+                } else if (value === 5) {
+                    //已完成
+                    return 4;
+                } else {
+                    //待付款、已关闭、无限订单
+                    return 1;
+                }
+            },
+            showUpdateReceiverDialog() {
+                this.receiverDialogVisible = true;
+                this.receiverInfo = {
+                    orderId: this.order.id,
+                    receiverName: this.order.receiverName,
+                    receiverPhone: this.order.receiverPhone,
+                    receiverPostCode: this.order.receiverPostCode,
+                    receiverDetailAddress: this.order.receiverDetailAddress,
+                    receiverProvince: this.order.receiverProvince,
+                    receiverCity: this.order.receiverCity,
+                    receiverRegion: this.order.receiverRegion,
+                    status: this.order.status
+                }
+            },
+            handleUpdateReceiverInfo() {
+                this.$confirm('是否要修改收货信息?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    orderUpdateReceiverInfo(this.receiverInfo).then(response => {
+                        this.receiverDialogVisible = false;
+                        this.$message({
+                            type: 'success',
+                            message: '修改成功!'
+                        });
+                        orderDetail(this.id).then(response => {
+                            this.order = response.data;
+                        });
+                    });
+                });
+            },
+            showUpdateWeighingDialog(data) {
+                this.weighingDialogVisible = true;
+                this.moneyInfo.orderId = this.order.id;
+                this.moneyInfo.orderItemId = data.id;
+            },
+            handleUpdateWeighingInfo() {
+                this.$confirm('是否要修改商品重量?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    orderUpdateReceiverInfo({
+                        orderId: this.moneyInfo.orderId,
+                        orderItemId: this.moneyInfo.orderItemId,
+                        actualWeighing: this.moneyInfo.actualWeighing
+                    },).then(response => {
+                        this.weighingDialogVisible = false;
+                        this.$message({
+                            type: 'success',
+                            message: '修改成功!'
+                        });
+                        orderDetail(this.id).then(response => {
+                            this.order = response.data;
+                        });
+                    });
+                });
+            },
+            // 订单缺货通知
+            showShortage(data) {
+                this.$confirm('是否发送缺货通知?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let param = {
+                        orderId: this.id,
+                        orderItemId: data.id,
+                        totalActualPayment: data.totalActualPayment,
+                        actualWeighing: data.actualWeighing
+                    };
+                    shortage(param).then(response=>{
+                        this.$message({
+                            type: 'success',
+                            message: '修缺货通知发送成功!'
+                        });
+                    })
+                });
+            },
 
-      showUpdateMoneyDialog(data) {
-        console.log('data', data)
-        this.moneyDialogVisible = true;
-        this.moneyInfo.orderId = this.order.id;
-        this.moneyInfo.orderItemId = data.id;
-      },
+            showUpdateMoneyDialog(data) {
+                this.moneyDialogVisible = true;
+                this.moneyInfo.orderId = this.order.id;
+                this.moneyInfo.orderItemId = data.id;
+            },
 
-      handleUpdateMoneyInfo() {
-        this.$confirm('是否要修改费用信息?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          orderUpdateReceiverInfo({orderId: this.moneyInfo.orderId, orderItemId: this.moneyInfo.orderItemId,totalActualPayment:this.moneyInfo.totalActualPayment}).then(response => {
-            this.moneyDialogVisible = false;
-            this.$message({
-              type: 'success',
-              message: '修改成功!'
-            });
-            orderDetail(this.id).then(response => {
-              this.order = response.data;
-            });
-          });
-        });
-      },
-      showMessageDialog() {
-        this.messageDialogVisible = true;
-        this.message.title = null;
-        this.message.content = null;
-      },
-      handleSendMessage() {
-        this.$confirm('是否要发送站内信?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.messageDialogVisible = false;
-          this.$message({
-            type: 'success',
-            message: '发送成功!'
-          });
-        });
-      },
-      showCloseOrderDialog() {
-        this.closeDialogVisible = true;
-        this.closeInfo.note = null;
-        this.closeInfo.id = this.id;
-      },
-      handleCloseOrder() {
-        this.$confirm('是否要关闭?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          closeOrder(this.order.id).then(response => {
-            this.closeDialogVisible = false;
-            this.$message({
-              type: 'success',
-              message: '订单关闭成功!'
-            });
-            orderDetail(this.id).then(response => {
-              this.order = response.data;
-            });
-          });
-        });
-      },
-      handleDeliveryOrder() {
-        delivery([this.order.id]).then(response => {
-          this.$message({
-            message: '发货成功',
-            type: 'success',
-            duration: 1000
-          });
-          orderDetail(this.id).then(response => {
-            this.order = response.data;
-          });
-        })
-      },
+            handleUpdateMoneyInfo() {
+                this.$confirm('是否要修改费用信息?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    orderUpdateReceiverInfo({
+                        orderId: this.moneyInfo.orderId,
+                        orderItemId: this.moneyInfo.orderItemId,
+                        totalActualPayment: this.moneyInfo.totalActualPayment
+                    }).then(response => {
+                        this.moneyDialogVisible = false;
+                        this.$message({
+                            type: 'success',
+                            message: '修改成功!'
+                        });
+                        orderDetail(this.id).then(response => {
+                            this.order = response.data;
+                        });
+                    });
+                });
+            },
+            showMessageDialog() {
+                this.messageDialogVisible = true;
+                this.message.title = null;
+                this.message.content = null;
+            },
+            handleSendMessage() {
+                this.$confirm('是否要发送站内信?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.messageDialogVisible = false;
+                    this.$message({
+                        type: 'success',
+                        message: '发送成功!'
+                    });
+                });
+            },
+            showCloseOrderDialog() {
+                this.closeDialogVisible = true;
+                this.closeInfo.note = null;
+                this.closeInfo.id = this.id;
+            },
+            handleCloseOrder() {
+                this.$confirm('是否要关闭?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    closeOrder(this.order.id).then(response => {
+                        this.closeDialogVisible = false;
+                        this.$message({
+                            type: 'success',
+                            message: '订单关闭成功!'
+                        });
+                        orderDetail(this.id).then(response => {
+                            this.order = response.data;
+                        });
+                    });
+                });
+            },
+            handleDeliveryOrder() {
+                delivery([this.order.id]).then(response => {
+                    this.$message({
+                        message: '发货成功',
+                        type: 'success',
+                        duration: 1000
+                    });
+                    orderDetail(this.id).then(response => {
+                        this.order = response.data;
+                    });
+                })
+            },
 
-      showMarkOrderDialog() {
-        this.markOrderDialogVisible = true;
-        this.markInfo.id = this.id;
-        this.closeOrder.note = null;
-      },
-      handleMarkOrder() {
-        this.$confirm('是否要备注订单?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          let params = new URLSearchParams();
-          params.append("id", this.markInfo.id);
-          params.append("note", this.markInfo.note);
-          params.append("status", this.order.status);
-          updateOrderNote(params).then(response => {
-            this.markOrderDialogVisible = false;
-            this.$message({
-              type: 'success',
-              message: '订单备注成功!'
-            });
-            orderDetail(this.id).then(response => {
-              this.order = response.data;
-            });
-          });
-        });
-      },
-      handleDeleteOrder() {
-        this.$confirm('是否要进行该删除操作?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          let params = new URLSearchParams();
-          params.append("ids", [this.id]);
-          deleteOrder(params).then(response => {
-            this.$message({
-              message: '删除成功！',
-              type: 'success',
-              duration: 1000
-            });
-            this.$router.back();
-          });
-        })
-      },
-      showLogisticsDialog() {
-        // 确认收货
-        confirmReceiveGood(this.order.id).then(
-          response => {
-            this.$message({
-              message: '确认收货成功',
-              type: 'success',
-              duration: 1000
-            });
-          }
-        )
-      }
+            showMarkOrderDialog() {
+                this.markOrderDialogVisible = true;
+                this.markInfo.id = this.id;
+                this.closeOrder.note = null;
+            },
+            handleMarkOrder() {
+                this.$confirm('是否要备注订单?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let params = new URLSearchParams();
+                    params.append("id", this.markInfo.id);
+                    params.append("note", this.markInfo.note);
+                    params.append("status", this.order.status);
+                    updateOrderNote(params).then(response => {
+                        this.markOrderDialogVisible = false;
+                        this.$message({
+                            type: 'success',
+                            message: '订单备注成功!'
+                        });
+                        orderDetail(this.id).then(response => {
+                            this.order = response.data;
+                        });
+                    });
+                });
+            },
+            handleDeleteOrder() {
+                this.$confirm('是否要进行该删除操作?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let params = new URLSearchParams();
+                    params.append("ids", [this.id]);
+                    deleteOrder(params).then(response => {
+                        this.$message({
+                            message: '删除成功！',
+                            type: 'success',
+                            duration: 1000
+                        });
+                        this.$router.back();
+                    });
+                })
+            },
+            showLogisticsDialog() {
+                // 确认收货
+                confirmReceiveGood(this.order.id).then(
+                    response => {
+                        this.$message({
+                            message: '确认收货成功',
+                            type: 'success',
+                            duration: 1000
+                        });
+                    }
+                )
+            }
+        }
     }
-  }
 </script>
 <style scoped>
   .detail-container {
