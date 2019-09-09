@@ -10,7 +10,7 @@ export function fetchList(params) {
 
 export function fetchSimpleList(params) {
   return request({
-    url: '/product/simpleList',
+    url: '/mall/admin/product/simpleList',
     method: 'get',
     params: params
   })
