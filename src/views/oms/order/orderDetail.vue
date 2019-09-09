@@ -137,7 +137,7 @@
               <el-button v-show="order.status === 1" @click="showUpdateWeighingDialog(scope.row)">修改称重</el-button>
             </p>
             <p>
-              <el-button v-show="order.status === 1" @click="showShortage(scope.row)">缺货通知</el-button>
+              <el-button v-show="order.status === 1" disabled @click="showShortage(scope.row)">缺货通知</el-button>
             </p>
           </template>
         </el-table-column>
