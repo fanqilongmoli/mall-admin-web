@@ -13,20 +13,16 @@
       <div class="operate-container">
         <i class="el-icon-warning color-danger" style="margin-left: 20px"></i>
         <span class="color-danger">当前订单状态：{{order.status | formatStatus}}</span>
+        <!--        订单状态：0->待付款；1->待发货；2->已发货；3->待补差价 4->待退差价 5->已完成；6->已关闭；7->无效订单-->
         <div class="operate-button-container" v-show="order.status===0">
           <el-button size="mini" @click="showUpdateReceiverDialog">修改收货人信息</el-button>
           <el-button size="mini">修改商品信息</el-button>
-          <!--<el-button size="mini" @click="showUpdateMoneyDialog">修改费用信息</el-button>-->
-          <!--<el-button size="mini" @click="showMessageDialog">发送站内信</el-button>-->
           <el-button size="mini" @click="handleCloseOrder">关闭订单</el-button>
           <el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>
         </div>
         <!--代发货-->
         <div class="operate-button-container" v-show="order.status===1">
-          <!--<el-button size="mini" @click="showUpdateReceiverDialog">修改收货人信息</el-button>-->
-          <!--<el-button size="mini" @click="showMessageDialog">发送站内信</el-button>-->
           <el-button size="mini" @click="handleDeliveryOrder">订单发货</el-button>
-          <el-button size="mini" @click="handleCloseOrder">取消订单</el-button>
           <el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>
         </div>
         <div class="operate-button-container" v-show="order.status===2">
@@ -38,6 +34,10 @@
           <el-button size="mini" @click="handleDeleteOrder">删除订单</el-button>
           <el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>
         </div>
+        <div class="operate-button-container">
+          <el-button size="mini" @click="handleCloseOrder">取消订单</el-button>
+        </div>
+
       </div>
       <div style="margin-top: 20px">
         <svg-icon icon-class="marker" style="color: #606266"></svg-icon>
@@ -590,7 +590,7 @@
                         totalActualPayment: data.totalActualPayment,
                         actualWeighing: data.actualWeighing
                     };
-                    shortage(param).then(response=>{
+                    shortage(param).then(response => {
                         this.$message({
                             type: 'success',
                             message: '修缺货通知发送成功!'
