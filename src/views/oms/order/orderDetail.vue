@@ -80,9 +80,9 @@
           <el-col :span="8" class="table-cell-title">收货地址</el-col>
         </el-row>
         <el-row>
-          <el-col :span="8" class="table-cell">{{order.shipping.receiverName}}</el-col>
-          <el-col :span="8" class="table-cell">{{order.shipping.receiverPhone}}</el-col>
-          <el-col :span="8" class="table-cell">{{order.shipping | formatAddress}}</el-col>
+          <el-col :span="8" class="table-cell">{{order.receiverName}}</el-col>
+          <el-col :span="8" class="table-cell">{{order.receiverPhone}}</el-col>
+          <el-col :span="8" class="table-cell">{{order | formatAddress}}</el-col>
         </el-row>
       </div>
       <div style="margin-top: 20px">
@@ -95,22 +95,22 @@
         style="width: 100%;margin-top: 20px" border>
         <el-table-column label="商品图片" width="120" align="center">
           <template slot-scope="scope">
-            <img :src="scope.row.productSpecs.product.mainImage" style="height: 80px">
+            <img :src="scope.row.productMainImage" style="height: 80px">
           </template>
         </el-table-column>
         <el-table-column label="商品名称" align="center">
           <template slot-scope="scope">
-            <p>{{scope.row.productSpecs.product.name}}</p>
+            <p>{{scope.row.productName}}</p>
           </template>
         </el-table-column>
         <el-table-column label="商品规格名称" align="center">
           <template slot-scope="scope">
-            <p>{{scope.row.productSpecs.specsName}}</p>
+            <p>{{scope.row.specsName}}</p>
           </template>
         </el-table-column>
         <el-table-column label="单价" width="120" align="center">
           <template slot-scope="scope">
-            <p>￥{{scope.row.productSpecs.price}}</p>
+            <p>￥{{scope.row.specsPrice}}</p>
           </template>
         </el-table-column>
         <el-table-column label="数量" width="120" align="center">
