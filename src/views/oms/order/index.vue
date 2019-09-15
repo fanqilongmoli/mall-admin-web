@@ -75,13 +75,13 @@
           <template slot-scope="scope">￥{{scope.row.payment}}</template>
         </el-table-column>
         <el-table-column label="订单实际支付金额" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.actualPayment}}</template>
+          <template slot-scope="scope">￥{{scope.row.actualPayment}}</template>
         </el-table-column>
-        <el-table-column label="退差价方式" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.refundType | formatRefundType}}</template>
+        <el-table-column label="用户昵称" width="120" align="center">
+          <template slot-scope="scope">{{scope.row.commonUser.nickName}}</template>
         </el-table-column>
-        <el-table-column label="支付类型" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.paymentType | formatPaymentType}}</template>
+        <el-table-column label="用户手机号" width="120" align="center">
+          <template slot-scope="scope">{{scope.row.shipping.receiverPhone}}</template>
         </el-table-column>
         <el-table-column label="订单状态" width="120" align="center">
           <template slot-scope="scope">{{scope.row.status | formatStatus}}</template>

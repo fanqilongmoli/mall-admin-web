@@ -14,7 +14,7 @@
               width="120"
               align="center">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.specsName"></el-input>
+                <el-input :disabled="scope.row.id" v-model="scope.row.specsName"></el-input>
               </template>
             </el-table-column>
             <el-table-column
@@ -45,7 +45,7 @@
               label="商品现单价"
               align="center">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.price"></el-input>
+                <el-input :disabled="scope.row.id" v-model="scope.row.price"></el-input>
               </template>
             </el-table-column>
             <el-table-column
