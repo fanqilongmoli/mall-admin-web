@@ -86,6 +86,9 @@
         <el-table-column label="订单状态" width="120" align="center">
           <template slot-scope="scope">{{scope.row.status | formatStatus}}</template>
         </el-table-column>
+        <el-table-column label="优惠券抵扣金额" width="120" align="center">
+          <template slot-scope="scope">￥{{scope.row.couponAmount}}</template>
+        </el-table-column>
         <el-table-column label="发货时间" align="center">
           <template slot-scope="scope">{{scope.row.sendTime | formatCreateTime}}</template>
         </el-table-column>

@@ -144,16 +144,18 @@
       </div>
       <div class="table-layout">
         <el-row>
-          <el-col :span="6" class="table-cell-title">订单支付总金额</el-col>
-          <el-col :span="6" class="table-cell-title">订单实际支付金额</el-col>
-          <el-col :span="6" class="table-cell-title">运费</el-col>
-          <el-col :span="6" class="table-cell-title">退差价方式</el-col>
+          <el-col :span="5" class="table-cell-title">订单支付总金额</el-col>
+          <el-col :span="5" class="table-cell-title">订单实际支付金额</el-col>
+          <el-col :span="5" class="table-cell-title">运费</el-col>
+          <el-col :span="5" class="table-cell-title">优惠券抵扣金额</el-col>
+          <el-col :span="4" class="table-cell-title">退差价方式</el-col>
         </el-row>
         <el-row>
-          <el-col :span="6" class="table-cell">￥{{order.payment}}</el-col>
-          <el-col :span="6" class="table-cell">￥{{order.actualPayment}}</el-col>
-          <el-col :span="6" class="table-cell">￥0</el-col>
-          <el-col :span="6" class="table-cell">{{order.refundType|formatRefundType}}</el-col>
+          <el-col :span="5" class="table-cell">￥{{order.payment}}</el-col>
+          <el-col :span="5" class="table-cell">￥{{order.actualPayment}}</el-col>
+          <el-col :span="5" class="table-cell">￥0</el-col>
+          <el-col :span="5" class="table-cell">￥{{order.couponAmount}}</el-col>
+          <el-col :span="4" class="table-cell">{{order.refundType|formatRefundType}}</el-col>
         </el-row>
       </div>
       <div style="margin-top: 60px">
