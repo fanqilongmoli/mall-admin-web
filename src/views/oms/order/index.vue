@@ -81,7 +81,7 @@
           <template slot-scope="scope">{{scope.row.commonUser.nickName}}</template>
         </el-table-column>
         <el-table-column label="用户手机号" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.shipping.receiverPhone}}</template>
+          <template slot-scope="scope">{{scope.row.receiverPhone}}</template>
         </el-table-column>
         <el-table-column label="订单状态" width="120" align="center">
           <template slot-scope="scope">{{scope.row.status | formatStatus}}</template>
@@ -182,324 +182,332 @@
   </div>
 </template>
 <script>
-  import {delivery, confirmReceiveGood} from '../../../api/order'
-  import {formatDate} from '@/utils/date';
-  import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
-  import {orderList, orderDelete, orderClose, closeOrder, notifyPayOffsetMoney} from '../../../api/order'
+    import {delivery, confirmReceiveGood} from '../../../api/order'
+    import {formatDate} from '@/utils/date';
+    import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
+    import {orderList, orderDelete, orderClose, closeOrder, notifyPayOffsetMoney} from '../../../api/order'
 
-  const defaultListQuery = {
-    pageNo: 1,
-    pageSize: 10,
-    orderNo: null,
-    receiverName: null,
-    receiverPhone: null,
-    status: null,
-    createTime: null,
-  };
-  export default {
-    name: "orderList",
-    components: {LogisticsDialog},
-    data() {
-      return {
-        listQuery: Object.assign({}, defaultListQuery),
-        listLoading: true,
-        list: null,
-        total: null,
-        operateType: null,
-        multipleSelection: [],
-        closeOrder: {
-          dialogVisible: false,
-          content: null,
-          orderIds: []
-        },
-        statusOptions: [
-          {
-            label: '待付款',
-            value: 0
-          },
-          {
-            label: '待发货',
-            value: 1
-          },
-          {
-            label: '已发货',
-            value: 2
-          },
-          {
-            label: '待补差价',
-            value: 3
-          },
-          {
-            label: '待退差价',
-            value: 4
-          },
-          {
-            label: '已完成',
-            value: 5
-          },
-          {
-            label: '已关闭',
-            value: 6
-          },
-          {
-            label: '无效订单',
-            value: 7
-          }
-        ],
-        logisticsDialogVisible: false
-      }
-    },
-    created() {
-      this.getOrderList();
-    },
-    filters: {
-      formatCreateTime(time) {
-        if (time) {
-          let date = new Date(time);
-          return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
-        } else {
-          return '';
-        }
-
-      },
-      formatPayType(value) {
-        if (value === 1) {
-          return '支付宝';
-        } else if (value === 2) {
-          return '微信';
-        } else {
-          return '未支付';
-        }
-      },
-      formatSourceType(value) {
-        if (value === 1) {
-          return 'APP订单';
-        } else {
-          return 'PC订单';
-        }
-      },
-      formatRefundType(value) {
-        if (value === 1) {
-          return '补差价';
-        } else {
-          return '退差价';
-        }
-      },
-      formatPaymentType(value) {
-        if (value === 1) {
-          return '在线支付';
-        }
-      },
-      formatStatus(value) {
-        // 订单状态：0->待付款；1->待发货；2->已发货；3->待补差价 4->待退差价 5->已完成；6->已关闭；7->无效订单
-        if (value === 1) {
-          return '待发货';
-        } else if (value === 2) {
-          return '已发货';
-        } else if (value === 3) {
-          return '待补差价';
-        } else if (value === 4) {
-          return '待退差价';
-        } else if (value === 5) {
-          return '已完成';
-        } else if (value === 6) {
-          return '已关闭'
-        } else if (value === 7) {
-          return '无效订单'
-        } else {
-          return '待付款';
-        }
-      },
-    },
-    methods: {
-      getOrderList() {
-        this.listLoading = true;
-        orderList(this.listQuery).then(response => {
-          console.log('orderList', response.data)
-          this.listLoading = false;
-          this.list = response.data.content;
-          this.total = response.data.totalElements
-        })
-      },
-      handleResetSearch() {
-        this.listQuery = Object.assign({}, defaultListQuery);
-      },
-      handleSearchList() {
-        this.listQuery.pageNum = 1;
-        this.getOrderList();
-      },
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-      handleViewOrder(index, row) {
-        this.$router.push({path: '/oms/orderDetail', query: {id: row.id}})
-      },
-      handleCloseOrder(index, row) {
-        //this.closeOrder.dialogVisible = true;
-        //this.closeOrder.orderIds = [row.id];
-        this.closeOrders(row.id)
-      },
-      handleDeliveryOrder(index, row) {
-        delivery([row.id]).then(response => {
-          this.$message({
-            message: '发货成功',
-            type: 'success',
-            duration: 1000
-          });
-          this.getOrderList();
-        })
-      },
-      handleViewLogistics(index, row) {
-        // 确认收货
-        confirmReceiveGood(row.id).then(
-          response => {
-            this.$message({
-              message: '确认收货成功',
-              type: 'success',
-              duration: 1000
-            });
-            this.getOrderList();
-          }
-        )
-      },
-      handleDeleteOrder(index, row) {
-        let ids = [];
-        ids.push(row.id);
-        this.deleteOrder(ids);
-      },
-      handleNotifyPayOrder(index, row) {
-        notifyPayOffsetMoney(row.id).then(response => {
-          this.$message({
-            message: '提醒发送成功',
-            type: 'success',
-            duration: 1000
-          });
-          //this.getOrderList();
-        });
-      },
-
-      handleBatchOperate() {
-        if (this.multipleSelection == null || this.multipleSelection.length < 1) {
-          this.$message({
-            message: '请选择要操作的订单',
-            type: 'warning',
-            duration: 1000
-          });
-          return;
-        }
-        if (this.operateType === 1) {
-          //批量发货
-          let list = [];
-          for (let i = 0; i < this.multipleSelection.length; i++) {
-            if (this.multipleSelection[i].status === 1) {
-              list.push(this.covertOrder(this.multipleSelection[i]));
+    const defaultListQuery = {
+        pageNo: 1,
+        pageSize: 10,
+        orderNo: null,
+        receiverName: null,
+        receiverPhone: null,
+        status: null,
+        createTime: null,
+    };
+    export default {
+        name: "orderList",
+        components: {LogisticsDialog},
+        data() {
+            return {
+                listQuery: Object.assign({}, defaultListQuery),
+                listLoading: true,
+                list: null,
+                total: null,
+                operateType: null,
+                multipleSelection: [],
+                closeOrder: {
+                    dialogVisible: false,
+                    content: null,
+                    orderIds: []
+                },
+                statusOptions: [
+                    {
+                        label: '待付款',
+                        value: 0
+                    },
+                    {
+                        label: '待发货',
+                        value: 1
+                    },
+                    {
+                        label: '已发货',
+                        value: 2
+                    },
+                    {
+                        label: '待补差价',
+                        value: 3
+                    },
+                    {
+                        label: '待退差价',
+                        value: 4
+                    },
+                    {
+                        label: '已完成',
+                        value: 5
+                    },
+                    {
+                        label: '已关闭',
+                        value: 6
+                    },
+                    {
+                        label: '无效订单',
+                        value: 7
+                    }
+                ],
+                logisticsDialogVisible: false
             }
-          }
-          if (list.length === 0) {
-            this.$message({
-              message: '选中订单中没有可以发货的订单',
-              type: 'warning',
-              duration: 1000
-            });
-            return;
-          }
-          this.$router.push({path: '/oms/deliverOrderList', query: {list: list}})
-        } else if (this.operateType === 2) {
-          //关闭订单
-          this.closeOrder.orderIds = [];
-          for (let i = 0; i < this.multipleSelection.length; i++) {
-            this.closeOrder.orderIds.push(this.multipleSelection[i].id);
-          }
-          this.closeOrder.dialogVisible = true;
-        } else if (this.operateType === 3) {
-          //删除订单
-          let ids = [];
-          for (let i = 0; i < this.multipleSelection.length; i++) {
-            ids.push(this.multipleSelection[i].id);
-          }
-          this.deleteOrder(ids);
-        }
-      },
-      handleSizeChange(val) {
-        this.listQuery.pageNum = 1;
-        this.listQuery.pageSize = val;
-        this.getOrderList();
-      },
-      handleCurrentChange(val) {
-        this.listQuery.pageNum = val;
-        this.getOrderList();
-      },
-      handleCloseOrderConfirm() {
-        if (this.closeOrder.content == null || this.closeOrder.content === '') {
-          this.$message({
-            message: '操作备注不能为空',
-            type: 'warning',
-            duration: 1000
-          });
-          return;
-        }
-        let params = new URLSearchParams();
-        params.append('ids', this.closeOrder.orderIds);
-        params.append('note', this.closeOrder.content);
-        closeOrder(params).then(response => {
-          this.closeOrder.orderIds = [];
-          this.closeOrder.dialogVisible = false;
-          this.getOrderList();
-          this.$message({
-            message: '修改成功',
-            type: 'success',
-            duration: 1000
-          });
-        });
-      },
-      closeOrders(ids) {
-        this.$confirm('是否要进行该关闭操作?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          closeOrder(ids).then(response => {
-            this.$message({
-              message: '关闭成功！',
-              type: 'success',
-              duration: 1000
-            });
+        },
+        created() {
+            const search = JSON.parse(localStorage.getItem("search_query"));
+            if (search) {
+                this.listQuery = search;
+            }
             this.getOrderList();
-          });
-        })
-      },
-      deleteOrder(ids) {
-        this.$confirm('是否要进行该删除操作?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          orderDelete(ids).then(response => {
-            this.$message({
-              message: '删除成功！',
-              type: 'success',
-              duration: 1000
-            });
-            this.getOrderList();
-          });
-        })
-      },
-      covertOrder(order) {
-        let address = order.receiverProvince + order.receiverCity + order.receiverRegion + order.receiverDetailAddress;
-        let listItem = {
-          orderId: order.id,
-          orderSn: order.orderSn,
-          receiverName: order.receiverName,
-          receiverPhone: order.receiverPhone,
-          receiverPostCode: order.receiverPostCode,
-          address: address,
-          deliveryCompany: null,
-          deliverySn: null
-        };
-        return listItem;
-      }
+        },
+        filters: {
+            formatCreateTime(time) {
+                if (time) {
+                    let date = new Date(time);
+                    return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
+                } else {
+                    return '';
+                }
+
+            },
+            formatPayType(value) {
+                if (value === 1) {
+                    return '支付宝';
+                } else if (value === 2) {
+                    return '微信';
+                } else {
+                    return '未支付';
+                }
+            },
+            formatSourceType(value) {
+                if (value === 1) {
+                    return 'APP订单';
+                } else {
+                    return 'PC订单';
+                }
+            },
+            formatRefundType(value) {
+                if (value === 1) {
+                    return '补差价';
+                } else {
+                    return '退差价';
+                }
+            },
+            formatPaymentType(value) {
+                if (value === 1) {
+                    return '在线支付';
+                }
+            },
+            formatStatus(value) {
+                // 订单状态：0->待付款；1->待发货；2->已发货；3->待补差价 4->待退差价 5->已完成；6->已关闭；7->无效订单
+                if (value === 1) {
+                    return '待发货';
+                } else if (value === 2) {
+                    return '已发货';
+                } else if (value === 3) {
+                    return '待补差价';
+                } else if (value === 4) {
+                    return '待退差价';
+                } else if (value === 5) {
+                    return '已完成';
+                } else if (value === 6) {
+                    return '已关闭'
+                } else if (value === 7) {
+                    return '无效订单'
+                } else {
+                    return '待付款';
+                }
+            },
+        },
+        methods: {
+            getOrderList() {
+                this.listLoading = true;
+                orderList(this.listQuery).then(response => {
+                    // 保存查询参数
+                    localStorage.setItem("search_query", JSON.stringify(this.listQuery));
+                    this.listLoading = false;
+                    this.list = response.data.content;
+                    this.total = response.data.totalElements
+                })
+            },
+            handleResetSearch() {
+                this.listQuery = Object.assign({}, defaultListQuery);
+                localStorage.removeItem("search_query");
+                this.getOrderList();
+            },
+            handleSearchList() {
+                localStorage.removeItem("search_query");
+                this.listQuery.pageNum = 1;
+                this.getOrderList();
+            },
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+            },
+            handleViewOrder(index, row) {
+                this.$router.push({path: '/oms/orderDetail', query: {id: row.id}})
+            },
+            handleCloseOrder(index, row) {
+                //this.closeOrder.dialogVisible = true;
+                //this.closeOrder.orderIds = [row.id];
+                this.closeOrders(row.id)
+            },
+            handleDeliveryOrder(index, row) {
+                delivery([row.id]).then(response => {
+                    this.$message({
+                        message: '发货成功',
+                        type: 'success',
+                        duration: 1000
+                    });
+                    this.getOrderList();
+                })
+            },
+            handleViewLogistics(index, row) {
+                // 确认收货
+                confirmReceiveGood(row.id).then(
+                    response => {
+                        this.$message({
+                            message: '确认收货成功',
+                            type: 'success',
+                            duration: 1000
+                        });
+                        this.getOrderList();
+                    }
+                )
+            },
+            handleDeleteOrder(index, row) {
+                let ids = [];
+                ids.push(row.id);
+                this.deleteOrder(ids);
+            },
+            handleNotifyPayOrder(index, row) {
+                notifyPayOffsetMoney(row.id).then(response => {
+                    this.$message({
+                        message: '提醒发送成功',
+                        type: 'success',
+                        duration: 1000
+                    });
+                    //this.getOrderList();
+                });
+            },
+
+            handleBatchOperate() {
+                if (this.multipleSelection == null || this.multipleSelection.length < 1) {
+                    this.$message({
+                        message: '请选择要操作的订单',
+                        type: 'warning',
+                        duration: 1000
+                    });
+                    return;
+                }
+                if (this.operateType === 1) {
+                    //批量发货
+                    let list = [];
+                    for (let i = 0; i < this.multipleSelection.length; i++) {
+                        if (this.multipleSelection[i].status === 1) {
+                            list.push(this.covertOrder(this.multipleSelection[i]));
+                        }
+                    }
+                    if (list.length === 0) {
+                        this.$message({
+                            message: '选中订单中没有可以发货的订单',
+                            type: 'warning',
+                            duration: 1000
+                        });
+                        return;
+                    }
+                    this.$router.push({path: '/oms/deliverOrderList', query: {list: list}})
+                } else if (this.operateType === 2) {
+                    //关闭订单
+                    this.closeOrder.orderIds = [];
+                    for (let i = 0; i < this.multipleSelection.length; i++) {
+                        this.closeOrder.orderIds.push(this.multipleSelection[i].id);
+                    }
+                    this.closeOrder.dialogVisible = true;
+                } else if (this.operateType === 3) {
+                    //删除订单
+                    let ids = [];
+                    for (let i = 0; i < this.multipleSelection.length; i++) {
+                        ids.push(this.multipleSelection[i].id);
+                    }
+                    this.deleteOrder(ids);
+                }
+            },
+            handleSizeChange(val) {
+                this.listQuery.pageNum = 1;
+                this.listQuery.pageSize = val;
+                this.getOrderList();
+            },
+            handleCurrentChange(val) {
+                this.listQuery.pageNum = val;
+                this.getOrderList();
+            },
+            handleCloseOrderConfirm() {
+                if (this.closeOrder.content == null || this.closeOrder.content === '') {
+                    this.$message({
+                        message: '操作备注不能为空',
+                        type: 'warning',
+                        duration: 1000
+                    });
+                    return;
+                }
+                let params = new URLSearchParams();
+                params.append('ids', this.closeOrder.orderIds);
+                params.append('note', this.closeOrder.content);
+                closeOrder(params).then(response => {
+                    this.closeOrder.orderIds = [];
+                    this.closeOrder.dialogVisible = false;
+                    this.getOrderList();
+                    this.$message({
+                        message: '修改成功',
+                        type: 'success',
+                        duration: 1000
+                    });
+                });
+            },
+            closeOrders(ids) {
+                this.$confirm('是否要进行该关闭操作?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    closeOrder(ids).then(response => {
+                        this.$message({
+                            message: '关闭成功！',
+                            type: 'success',
+                            duration: 1000
+                        });
+                        this.getOrderList();
+                    });
+                })
+            },
+            deleteOrder(ids) {
+                this.$confirm('是否要进行该删除操作?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    orderDelete(ids).then(response => {
+                        this.$message({
+                            message: '删除成功！',
+                            type: 'success',
+                            duration: 1000
+                        });
+                        this.getOrderList();
+                    });
+                })
+            },
+            covertOrder(order) {
+                let address = order.receiverProvince + order.receiverCity + order.receiverRegion + order.receiverDetailAddress;
+                let listItem = {
+                    orderId: order.id,
+                    orderSn: order.orderSn,
+                    receiverName: order.receiverName,
+                    receiverPhone: order.receiverPhone,
+                    receiverPostCode: order.receiverPostCode,
+                    address: address,
+                    deliveryCompany: null,
+                    deliverySn: null
+                };
+                return listItem;
+            }
+        }
     }
-  }
 </script>
 <style scoped>
   .input-width {
