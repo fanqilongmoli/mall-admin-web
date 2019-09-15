@@ -149,18 +149,9 @@
                 border>
         <el-table-column
           label="规格名称"
-          width="80"
           align="center">
           <template slot-scope="scope">
-            <el-input v-model="scope.row.specsName"></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="SKU编码"
-          width="80"
-          align="center">
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.skuNo"></el-input>
+            <el-input v-model="scope.row.specsName" disabled></el-input>
           </template>
         </el-table-column>
         <el-table-column
@@ -183,7 +174,7 @@
           label="商品现单价"
           align="center">
           <template slot-scope="scope">
-            <el-input v-model="scope.row.price"></el-input>
+            <el-input v-model="scope.row.price" disabled></el-input>
           </template>
         </el-table-column>
         <el-table-column
