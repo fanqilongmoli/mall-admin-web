@@ -139,11 +139,6 @@
       title="编辑货品信息"
       :visible.sync="editSkuInfo.dialogVisible"
       width="40%">
-      <!--<span>商品货号：</span>-->
-      <!--<span>{{editSkuInfo.productSn}}</span>-->
-      <!--<el-input placeholder="按sku编号搜索" v-model="editSkuInfo.keyword" size="small" style="width: 50%;margin-left: 20px">-->
-      <!--<el-button slot="append" icon="el-icon-search" @click="handleSearchEditSku"></el-button>-->
-      <!--</el-input>-->
       <el-table style="width: 100%;margin-top: 20px"
                 :data="editSkuInfo.stockList"
                 border>
@@ -151,7 +146,7 @@
           label="规格名称"
           align="center">
           <template slot-scope="scope">
-            <el-input v-model="scope.row.specsName" disabled></el-input>
+            <el-input v-model="scope.row.specsName"></el-input>
           </template>
         </el-table-column>
         <el-table-column
@@ -174,7 +169,7 @@
           label="商品现单价"
           align="center">
           <template slot-scope="scope">
-            <el-input v-model="scope.row.price" disabled></el-input>
+            <el-input v-model="scope.row.price"></el-input>
           </template>
         </el-table-column>
         <el-table-column
