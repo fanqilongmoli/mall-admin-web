@@ -75,7 +75,7 @@
         </el-table-column>
         <el-table-column label="原价" width="120" align="center">
           <template slot-scope="scope">
-            <p>￥{{scope.row.originalPrice}}</p>
+            <p>￥{{scope.row.price}}</p>
           </template>
         </el-table-column>
         <el-table-column label="SKU库存" width="100" align="center">
@@ -190,176 +190,185 @@
 
 </template>
 <script>
-  import {getProductList, deleteProduct, listSpecs, saveSpecsList} from '../../../api/product'
-  import {getProductCateList} from '../../../api/productCate'
+    import {getProductList, deleteProduct, listSpecs, saveSpecsList} from '../../../api/product'
+    import {getProductCateList} from '../../../api/productCate'
 
-  const defaultListQuery = {
-    name: null,
-    pageNo: 1,
-    pageSize: 5,
-    status: null,
-    categoryId: [],
+    const defaultListQuery = {
+        name: null,
+        pageNo: 1,
+        pageSize: 5,
+        status: null,
+        categoryId: [],
 
-  };
-  export default {
-    name: "productList",
-    data() {
-      return {
-        operates: [
-          {
-            label: "下架",
-            value: 1
-          },
-          {
-            label: "在售",
-            value: 2
-          },
-          {
-            label: "新品",
-            value: 3
-          },
-          {
-            label: "爆款",
-            value: 4
-          }
-        ],
-        operateType: null,
-        listQuery: Object.assign({}, defaultListQuery),
-        list: null,
-        total: null,
-        listLoading: true,
-        selectProductCateValue: null,
-        multipleSelection: [],
-        productCateOptions: [],
-        brandOptions: [],
-        defaultParams: {
-          label: 'name',
-          value: 'id',
-          children: 'children'
+    };
+    export default {
+        name: "productList",
+        data() {
+            return {
+                operates: [
+                    {
+                        label: "下架",
+                        value: 1
+                    },
+                    {
+                        label: "在售",
+                        value: 2
+                    },
+                    {
+                        label: "新品",
+                        value: 3
+                    },
+                    {
+                        label: "爆款",
+                        value: 4
+                    }
+                ],
+                operateType: null,
+                listQuery: Object.assign({}, defaultListQuery),
+                list: null,
+                total: null,
+                listLoading: true,
+                selectProductCateValue: null,
+                multipleSelection: [],
+                productCateOptions: [],
+                brandOptions: [],
+                defaultParams: {
+                    label: 'name',
+                    value: 'id',
+                    children: 'children'
+                },
+                editSkuInfo: {
+                    dialogVisible: false,
+                    productId: null,
+                    productSn: '',
+                    productAttributeCategoryId: null,
+                    stockList: [],
+                    productAttr: [],
+                    keyword: null
+                },
+            }
         },
-        editSkuInfo: {
-          dialogVisible: false,
-          productId: null,
-          productSn: '',
-          productAttributeCategoryId: null,
-          stockList: [],
-          productAttr: [],
-          keyword: null
+        created() {
+            const search = JSON.parse(localStorage.getItem("search_query_p"));
+            if (search) {
+                this.listQuery = search;
+            }
+            this.getList();
+            this.getProductCateLists();
         },
-      }
-    },
-    created() {
-      this.getList();
-      this.getProductCateLists();
-    },
-    watch: {},
-    filters: {
-      verifyStatusFilter(value) {
-        return value === 1 ? "下架" : value === 2 ? "在售" : value === 3 ? "新品" : "爆款";
-      }
-    },
-    methods: {
-      getList() {
-        this.listLoading = true;
-        const data = this.listQuery;
-        getProductList(data).then(response => {
-          this.listLoading = false;
-          this.list = response.data.content;
-          this.total = response.data.totalElements;
-        });
-      },
-      getProductCateLists() {
-        getProductCateList().then(response => {
-          this.productCateOptions = response.data
-        })
-      },
-      handleSearchList() {
-        this.listQuery.pageNo = 1;
-        this.getList();
-      },
-      handleAddProduct() {
-        this.$router.push({path: '/pms/addProduct'});
-      },
-      handleSizeChange(val) {
-        this.listQuery.pageNo = 1;
-        this.listQuery.pageSize = val;
-        this.getList();
-      },
-      handleCurrentChange(val) {
-        this.listQuery.pageNo = val;
-        this.getList();
-      },
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-      handleResetSearch() {
-        this.listQuery = Object.assign({}, defaultListQuery);
-      },
-      handleDelete(index, row) {
-        this.$confirm('是否要进行删除操作?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          let ids = [];
-          ids.push(row.id);
-          this.updateDeleteStatus(ids);
-        });
-      },
-      handleUpdateProduct(index, row) {
-        this.$router.push({path: '/pms/updateProduct', query: {id: row.id}});
-      },
-      handleShowProduct(index, row) {
-        console.log("handleShowProduct", row);
-      },
-      handleShowSkuEditDialog(index, row) {
+        watch: {},
+        filters: {
+            verifyStatusFilter(value) {
+                return value === 1 ? "下架" : value === 2 ? "在售" : value === 3 ? "新品" : "爆款";
+            }
+        },
+        methods: {
+            getList() {
+                this.listLoading = true;
+                const data = this.listQuery;
+                getProductList(data).then(response => {
+                    // 保存查询参数
+                    localStorage.setItem("search_query_p", JSON.stringify(this.listQuery));
+                    this.listLoading = false;
+                    this.list = response.data.content;
+                    this.total = response.data.totalElements;
+                });
+            },
+            getProductCateLists() {
+                getProductCateList().then(response => {
+                    this.productCateOptions = response.data
+                })
+            },
+            handleSearchList() {
+                localStorage.removeItem("search_query_p");
+                this.listQuery.pageNo = 1;
+                this.getList();
+            },
+            handleAddProduct() {
+                this.$router.push({path: '/pms/addProduct'});
+            },
+            handleSizeChange(val) {
+                this.listQuery.pageNo = 1;
+                this.listQuery.pageSize = val;
+                this.getList();
+            },
+            handleCurrentChange(val) {
+                this.listQuery.pageNo = val;
+                this.getList();
+            },
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+            },
+            handleResetSearch() {
+                localStorage.removeItem("search_query_p");
+                this.listQuery = Object.assign({}, defaultListQuery);
+                this.getList();
+            },
+            handleDelete(index, row) {
+                this.$confirm('是否要进行删除操作?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let ids = [];
+                    ids.push(row.id);
+                    this.updateDeleteStatus(ids);
+                });
+            },
+            handleUpdateProduct(index, row) {
+                this.$router.push({path: '/pms/updateProduct', query: {id: row.id}});
+            },
+            handleShowProduct(index, row) {
+                console.log("handleShowProduct", row);
+            },
+            handleShowSkuEditDialog(index, row) {
 
-        // 获取对应商品的规格列表
-        listSpecs(row.id).then(response => {
-          this.editSkuInfo.dialogVisible = true;
-          this.editSkuInfo.stockList = response.data;
-        })
-      },
-      handleEditSkuConfirm() {
-        if (this.editSkuInfo.stockList == null || this.editSkuInfo.stockList.length <= 0) {
-          this.$message({
-            message: '暂无sku信息',
-            type: 'warning',
-            duration: 1000
-          });
-          return
+                // 获取对应商品的规格列表
+                listSpecs(row.id).then(response => {
+                    this.editSkuInfo.dialogVisible = true;
+                    this.editSkuInfo.stockList = response.data;
+                })
+            },
+            handleEditSkuConfirm() {
+                if (this.editSkuInfo.stockList == null || this.editSkuInfo.stockList.length <= 0) {
+                    this.$message({
+                        message: '暂无sku信息',
+                        type: 'warning',
+                        duration: 1000
+                    });
+                    return
+                }
+                this.$confirm('是否要进行修改', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    saveSpecsList(this.editSkuInfo.stockList).then(response => {
+                        this.$message({
+                            message: '修改成功',
+                            type: 'success',
+                            duration: 1000
+                        });
+                        this.editSkuInfo.dialogVisible = false;
+                    });
+                });
+            },
+            updateDeleteStatus(ids) {
+                //let params = new URLSearchParams();
+                //params.append('ids', ids);
+                //params.append('deleteStatus', deleteStatus);
+                deleteProduct(ids).then(response => {
+                    this.$message({
+                        message: '删除成功',
+                        type: 'success',
+                        duration: 1000
+                    });
+                    this.getList();
+                });
+
+            }
         }
-        this.$confirm('是否要进行修改', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          saveSpecsList(this.editSkuInfo.stockList).then(response => {
-            this.$message({
-              message: '修改成功',
-              type: 'success',
-              duration: 1000
-            });
-            this.editSkuInfo.dialogVisible = false;
-          });
-        });
-      },
-      updateDeleteStatus(ids) {
-        //let params = new URLSearchParams();
-        //params.append('ids', ids);
-        //params.append('deleteStatus', deleteStatus);
-        deleteProduct(ids).then(response => {
-          this.$message({
-            message: '删除成功',
-            type: 'success',
-            duration: 1000
-          });
-          this.getList();
-        });
-
-      }
     }
-  }
 </script>
 <style></style>
 
