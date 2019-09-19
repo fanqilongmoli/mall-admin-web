@@ -25,6 +25,9 @@
           <el-button size="mini" @click="handleDeliveryOrder">订单发货</el-button>
           <el-button size="mini" @click="showMarkOrderDialog">备注订单</el-button>
         </div>
+        <div class="operate-button-container" v-show="order.status===3">
+          <el-button size="mini" @click="payOffsetMoneyOffLineDialogVisible = true">线下补差价</el-button>
+        </div>
         <div class="operate-button-container" v-show="order.status===2">
           <el-button size="mini" @click="showLogisticsDialog">确认收货</el-button>
           <el-button size="mini" @click="showMessageDialog">发送站内信</el-button>
@@ -137,7 +140,7 @@
               <el-button v-show="order.status === 1" @click="showUpdateWeighingDialog(scope.row)">修改称重</el-button>
             </p>
             <p>
-              <el-button v-show="order.status === 1" disabled @click="showShortage(scope.row)">缺货通知</el-button>
+              <el-button v-show="order.status === 1" @click="showShortage(scope.row)">缺货通知</el-button>
             </p>
           </template>
         </el-table-column>
@@ -317,6 +320,15 @@
         <el-button type="primary" @click="handleCloseOrder">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="线下补差价信息"
+               :visible.sync="payOffsetMoneyOffLineDialogVisible"
+               width="40%">
+     <span>需补差价金额：{{order.payment - order.actualPayment}}</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="payOffsetMoneyOffLineDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handlePayOffLineMoney">确 定</el-button>
+      </span>
+    </el-dialog>
     <el-dialog title="备注订单"
                :visible.sync="markOrderDialogVisible"
                width="40%">
@@ -346,7 +358,8 @@
         orderUpdateReceiverInfo,
         confirmReceiveGood,
         delivery,
-        shortage
+        shortage,
+      payOffsetMoneyOffLine
     } from '../../../api/order';
     import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
     import {formatDate} from '@/utils/date';
@@ -375,7 +388,8 @@
                 closeInfo: {note: null, id: null},
                 markOrderDialogVisible: false,
                 markInfo: {note: null},
-                logisticsDialogVisible: false
+                logisticsDialogVisible: false,
+                payOffsetMoneyOffLineDialogVisible: false
             }
         },
         created() {
@@ -493,6 +507,14 @@
             }
         },
         methods: {
+          handlePayOffLineMoney(){
+            payOffsetMoneyOffLine(this.order.id).then(()=>{
+              orderDetail(this.id).then(response => {
+                this.order = response.data;
+              });
+              this.payOffsetMoneyOffLineDialogVisible = false;
+            })
+          },
             onSelectRegion(data) {
                 this.receiverInfo.receiverProvince = data.province.value;
                 this.receiverInfo.receiverCity = data.city.value;

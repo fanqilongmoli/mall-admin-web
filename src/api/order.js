@@ -197,3 +197,14 @@ export function shortage(data) {
     data: data
   })
 }
+
+/**
+ * 线下补差价
+ * @param id
+ */
+export function payOffsetMoneyOffLine(id) {
+  return request({
+    url: `/mall/admin/order/offLinePayOffsetMoney/${id}`,
+    method: 'get'
+  })
+}
