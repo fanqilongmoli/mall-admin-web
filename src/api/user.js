@@ -26,6 +26,17 @@ export function sendCoupon(data) {
 }
 
 /**
+ * 发送平台优惠券
+ * @param data
+ */
+export function sendPlatformCoupon(data) {
+  return request({
+    url: `/mall/admin/user/sendCoupon?couponId=${data.couponId}&userId=${data.userId}`,
+    method: 'get'
+  })
+}
+
+/**
  * 修改用户电话号码
  * @param data
  */

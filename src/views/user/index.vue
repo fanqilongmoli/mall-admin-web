@@ -56,7 +56,14 @@
               <el-button
                 size="mini"
                 type="danger"
-                @click="sendCoupon(scope.$index, scope.row)">发放代金券
+                @click="sendCoupon(scope.$index, scope.row)">发放微信代金券
+              </el-button>
+            </p>
+            <p>
+              <el-button
+                size="mini"
+                type="danger"
+                @click="sendPlatformCoupon(scope.$index, scope.row)">发放平台优惠券
               </el-button>
             </p>
             <p>
@@ -105,6 +112,21 @@
     </el-dialog>
 
     <el-dialog
+      title="发放平台优惠券"
+      :visible.sync="platformCouponDialog"
+      width="40%">
+      <el-form :model="form" ref="platformCouponForm" :rules="rules">
+        <el-form-item label="优惠券编号	" prop="platform_coupon_id">
+          <el-input v-model="form.platform_coupon_id" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handlePlatformCouponCancel">取 消</el-button>
+        <el-button type="primary" @click="handlePlatformCouponConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
       title="修改电话号码"
       :visible.sync="phoneDialog"
       width="40%">
@@ -122,7 +144,7 @@
 </template>
 
 <script>
-  import {list, sendCoupon, updatePhone, deleteUser} from "../../api/user"
+  import {list, sendCoupon, updatePhone, deleteUser,sendPlatformCoupon} from "../../api/user"
   import {random3} from "../../utils/math"
 
   const defaultListQuery = {
@@ -152,12 +174,14 @@
         },
         form: {
           coupon_stock_id: "",
+          platform_coupon_id: "",
         },
         formPhone: {
           phone: ""
         },
         currentUser: null,
         couponDialog: false,
+        platformCouponDialog: false,
         phoneDialog: false
       }
     },
@@ -196,6 +220,25 @@
       sendCoupon(index, val) {
         this.couponDialog = true;
         this.currentUser = val;
+      },
+      sendPlatformCoupon(index,val){
+        this.platformCouponDialog = true;
+        this.currentUser = val;
+      },
+      handlePlatformCouponCancel() {
+        this.platformCouponDialog = false;
+        this.$refs.platformCouponForm.resetFields();
+      },
+      handlePlatformCouponConfirm() {
+        let param = {
+          userId: this.currentUser.id,
+          couponId: this.form.platform_coupon_id
+        };
+        sendPlatformCoupon(param).then(response => {
+          this.platformCouponDialog = false;
+          this.$refs.platformCouponForm.resetFields();
+          this.$message.success("优惠券发送成功")
+        })
       },
       handleEditCancel() {
         this.couponDialog = false;
