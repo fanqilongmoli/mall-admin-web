@@ -28,6 +28,7 @@
     import ProductRelationDetail from './ProductRelationDetail';
     import {createProduct, getProduct, updateProduct} from '@/api/product';
     import {saveProduct, getDetail} from '../../../../api/product'
+    import * as productTemp from '../../../../api/productTemp'
 
     const defaultProductParam = {
         categoryId: null, //商品分类
@@ -127,7 +128,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    saveProduct(this.productParam).then(response => {
+                    productTemp.saveProduct(this.productParam).then(response => {
                         this.$message({
                             type: 'success',
                             message: '提交成功',
