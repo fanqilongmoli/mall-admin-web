@@ -128,7 +128,16 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    productTemp.saveProduct(this.productParam).then(response => {
+                  if (this.productParam.id) {
+                    this.productParam = {...this.productParam,pid:this.productParam.id}
+                  }
+                  let copySpecs = [];
+                  this.productParam.productSpecsList.forEach((item)=>{
+                    copySpecs.push({...item,sid:item.id})
+                  });
+                  this.productParam = {...this.productParam,pid:this.productParam.id,productSpecsList:copySpecs};
+
+                  productTemp.saveProduct(this.productParam).then(response => {
                         this.$message({
                             type: 'success',
                             message: '提交成功',
