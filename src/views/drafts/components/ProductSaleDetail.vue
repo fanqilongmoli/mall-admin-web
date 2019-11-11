@@ -77,104 +77,100 @@
       </el-form-item>
       <el-form-item style="text-align: center">
         <el-button size="medium" @click="handlePrev">上一步，填写商品促销</el-button>
-        <el-button type="primary" size="medium" @click="handleFinishCommit">完成，提交商品</el-button>
-        <el-button type="primary" size="medium" @click="handleFinishCommitTemp">完成，保存到草稿</el-button>
+        <el-button type="primary" size="medium" @click="handleFinishCommit">完成，保存到草稿</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
-    import MultiUpload from '../../../../components/Upload/multiUpload'
-    import Tinymce from '../../../../components/Tinymce'
+  import MultiUpload from '../../../components/Upload/multiUpload'
+  import Tinymce from '../../../components/Tinymce'
 
-    import {deleteSpecs} from '../../../../api/product'
+  import {deleteSpecs} from '../../../api/product'
 
-    export default {
-        name: "ProductSaleDetail",
-        props: {
-            value: Object,
-            isEdit: {
-                type: Boolean,
-                default: false
-            }
-        },
-        data() {
-            return {
-                // 手动添加规格的值
-                addProductAttrValue: '',
-            }
-        },
-        components: {
-            MultiUpload, Tinymce
-        },
-        methods: {
-            handlePrev() {
-                this.$emit('prevStep')
-            },
-            handleNext() {
-                this.$emit('nextStep')
-            },
-            handleFinishCommit() {
-                this.$emit('finishCommit', this.isEdit);
-            },
-            handleFinishCommitTemp() {
-                this.$emit('finishCommitTemp', this.isEdit);
-            },
-            // 添加新的规格名称
-            handleAddProductAttrValue() {
-                console.log("asdasdasdasd", this.value);
-                if (this.addProductAttrValue == null || this.addProductAttrValue == '') {
-                    this.$message({
-                        message: '属性值不能为空',
-                        type: 'warning',
-                        duration: 1000
-                    });
-                    return
-                }
-
-                if (this.value.productSpecsList.length > 0 && this.value.productSpecsList.filter(item => item.specsName === this.addProductAttrValue).length > 0) {
-                    this.$message({
-                        message: '属性值不能重复',
-                        type: 'warning',
-                        duration: 1000
-                    });
-                    return;
-                }
-                this.value.productSpecsList.push({
-                    specsName: this.addProductAttrValue,
-                    skuNo: '',
-                    stock: '',
-                    costPrice: '',
-                    price: '',
-                    saleStyle: '',
-                })
-            },
-            // 删除规格
-            handleRemoveProductSku(index, row) {
-                if (row.id) {
-                    // 编辑状态 调用接口删除
-                    const list = this.value.productSpecsList;
-                    deleteSpecs(row.id).then(response => {
-                        if (list.length === 1) {
-                            list.pop();
-                        } else {
-                            list.splice(index, 1);
-                        }
-                    })
-                } else {
-                    // 添加状态 本地删除
-                    const list = this.value.productSpecsList;
-                    if (list.length === 1) {
-                        list.pop();
-                    } else {
-                        list.splice(index, 1);
-                    }
-
-                }
-            }
+  export default {
+    name: "ProductSaleDetail",
+    props: {
+      value: Object,
+      isEdit: {
+        type: Boolean,
+        default: false
+      }
+    },
+    data() {
+      return {
+        // 手动添加规格的值
+        addProductAttrValue: '',
+      }
+    },
+    components: {
+      MultiUpload, Tinymce
+    },
+    methods: {
+      handlePrev() {
+        this.$emit('prevStep')
+      },
+      handleNext() {
+        this.$emit('nextStep')
+      },
+      handleFinishCommit() {
+        this.$emit('finishCommit', this.isEdit);
+      },
+      // 添加新的规格名称
+      handleAddProductAttrValue() {
+        console.log("asdasdasdasd", this.value);
+        if (this.addProductAttrValue == null || this.addProductAttrValue == '') {
+          this.$message({
+            message: '属性值不能为空',
+            type: 'warning',
+            duration: 1000
+          });
+          return
         }
+
+        if (this.value.productSpecsList.length > 0 && this.value.productSpecsList.filter(item => item.specsName === this.addProductAttrValue).length > 0) {
+          this.$message({
+            message: '属性值不能重复',
+            type: 'warning',
+            duration: 1000
+          });
+          return;
+        }
+        this.value.productSpecsList.push({
+          specsName: this.addProductAttrValue,
+          skuNo: '',
+          stock: '',
+          costPrice: '',
+          price: '',
+          saleStyle: '',
+        })
+      },
+      // 删除规格
+      handleRemoveProductSku(index, row) {
+        if (row.id) {
+          // 编辑状态 调用接口删除
+          const list = this.value.productSpecsList;
+          deleteSpecs(row.id).then(response => {
+            if (list.length === 1) {
+              list.pop();
+            } else {
+              list.splice(index, 1);
+            }
+          })
+        } else {
+          // 添加状态 本地删除
+          const list = this.value.productSpecsList;
+          if (list.length === 1) {
+            list.pop();
+          } else {
+            list.splice(index, 1);
+          }
+
+        }
+      }
     }
+  }
 </script>
 
 <style scoped>

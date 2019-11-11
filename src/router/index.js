@@ -320,6 +320,33 @@ export const constantRouterMap = [
       meta: {title: '用户管理', icon: 'user'}
     }]
   },
+  {
+    path: '/drafts',
+    component: Layout,
+    redirect: '/drafts/product',
+    name: 'drafts',
+    meta: {title: '草稿', icon: 'product'},
+    children: [{
+      path: 'product',
+      name: 'product',
+      component: () => import('@/views/drafts/index'),
+      meta: {title: '商品草稿列表', icon: 'product-list'}
+    },
+      {
+        path: 'addProduct',
+        name: 'addProduct',
+        component: () => import('@/views/drafts/add'),
+        meta: {title: '添加草稿商品', icon: 'product-add'}
+      },
+      {
+        path: 'updateProduct',
+        name: 'updateProduct',
+        component: () => import('@/views/drafts/update'),
+        meta: {title: '修改商品', icon: 'product-add'},
+        hidden: true
+      },
+    ]
+  },
   {path: '*', redirect: '/404', hidden: true}
 ]
 
